@@ -1,0 +1,556 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Donation;
+use App\Models\Donor;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DonationConfirmationMail;
+
+class DonationController extends Controller
+{
+
+    public function __construct()
+    {
+        self::$CompanyToken = env('COMPANY_TOKEN', 'default_token');
+    }
+    private static $endpoint_url = "https://secure.3gdirectpay.com/API/v6/";
+    private static $CompanyToken = "8D3DA73D-9D7F-4E09-96D4-3D44E7A83EA3";
+    private static $serviceType = "5525";
+    public static $ref;
+
+    // Instead of passing $ref in constructor, set it dynamically inside a method
+    public static function setRef($ref)
+    {
+        self::$ref = $ref;
+    }
+
+    // Display the donations page
+    public function index()
+    {
+        return view('dashboard.index', compact('posts', 'donations'));
+    }
+
+    public function donations()
+    {
+        $donations = Donation::all();
+
+        return view('dashboard.donation', compact('donations'));
+    }
+
+    // Fetch individual donation details
+    public function show($id)
+    {
+        $donation = Donation::findOrFail($id);
+        return response()->json($donation);
+    }
+
+    // Generate a PDF invoice for the donation
+    public function generateInvoice($id)
+    {
+        $donation = Donation::findOrFail($id);
+
+        $pdf = PDF::loadView('dashboard.invoice', compact('donation'));
+        return $pdf->download('CEJ-INV-' . $donation->transaction_token . '.pdf');
+    }
+
+    // Show the donation form
+    public function showForm()
+    {
+        return view('donate.index', ['title' => 'Donation Page']);
+    }
+
+    // Process donation logic  
+    function generateCompanyRef()
+    {
+        // Array to store the generated characters
+        $companyRef = '';
+
+        // Generate 4 random uppercase letters
+        for ($i = 0; $i < 4; $i++) {
+            $companyRef .= chr(rand(65, 90));  // ASCII values for 'A' to 'Z'
+        }
+
+        // Generate a random number between 0 and 9
+        $companyRef .= rand(0, 9);
+
+        return $companyRef;
+    }
+
+
+    
+    public static function CreateChargeToken($RedirectURL, $BackURL, $ServiceDescription, $PaymentAmount, $PaymentCurrency)
+    {
+        $ServiceDate = date('Y-m-d H:i:s');
+        $endpoint = DonationController::$endpoint_url;
+        $xmlData = "<?xml version=\"1.0\" encoding=\"utf-8\"?><API3G><CompanyToken>" . DonationController::$CompanyToken . "</CompanyToken><Request>createToken</Request><Transaction><PaymentAmount>" . $PaymentAmount . "</PaymentAmount><PaymentCurrency>" . $PaymentCurrency . "</PaymentCurrency><CompanyRef>" . DonationController::$ref . "</CompanyRef><RedirectURL>" . $RedirectURL . "</RedirectURL><BackURL>" . $BackURL . "</BackURL><CompanyRefUnique>0</CompanyRefUnique><PTL>5</PTL></Transaction><Services><Service><ServiceType>" . DonationController::$serviceType . "</ServiceType><ServiceDescription>" . $ServiceDescription . "</ServiceDescription><ServiceDate>" . $ServiceDate . "</ServiceDate></Service></Services></API3G>";
+
+        $ch = curl_init();
+
+        if (!$ch) {
+            die("Couldn't initialize a cURL handle");
+        }
+        curl_setopt($ch, CURLOPT_URL, $endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlData);
+
+        $result = curl_exec($ch);
+
+
+        curl_close($ch);
+
+        // Parse the XML response using SimpleXML 
+        $response = simplexml_load_string($result);
+
+
+
+        return ["message" => $result, "response" => $response];
+    }
+
+        //Verify transaction
+        public static function verifyTrans($token)
+        {
+    
+            $endpoint = self::$endpoint_url;
+            $xmlData = '<?xml version="1.0" encoding="UTF-8"?> <API3G> <CompanyToken>' . DonationController::$CompanyToken . '</CompanyToken> <Request>verifyToken</Request> <TransactionToken>' . $token . '</TransactionToken>  </API3G>';
+    
+            $xmlPayload = '
+            <?xml version="1.0" encoding="utf-8"?>
+            <API3G>
+                <CompanyToken>' . DonationController::$CompanyToken . '</CompanyToken>
+                <Request>verifyToken</Request>
+                <TransactionToken>' . $token . '</TransactionToken>
+            </API3G>';
+    
+            $ch = curl_init();
+    
+            if (!$ch) {
+                die("Couldn't initialize a cURL handle");
+            }
+            curl_setopt($ch, CURLOPT_URL, $endpoint);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlPayload);
+    
+            $result = curl_exec($ch);
+            //echo $result;
+    
+    
+    
+    
+            // Check if the curl_exec operation was successful
+            if ($result === false) {
+                die("cURL execution failed: " . curl_error($ch));
+            }
+    
+    
+    
+            // Parse the XML response using SimpleXML 
+    
+    
+            $response = simplexml_load_string($result);
+    
+            $tran_status = "pending";
+    
+    
+    
+            if (isset($response['response']->Result) && $response['response']->Result == '000') {
+    
+                $tran_status = "success";
+    
+            } elseif ($response->Result == 904 || $response->Result == 903) {
+                $tran_status = "failed";
+    
+    
+            } else {
+                $tran_status = "pending";
+            }
+    
+            return ["tran_status" => $tran_status];
+        }
+    
+        public function verifyDonation(Request $request)
+        {
+            $transactionToken = $request->input('transaction_token');
+    
+            // Wait a few seconds before checking (optional)
+            sleep(5);
+    
+            // Check if the webhook has already updated the status
+            $donation = Donation::where('transaction_token', $transactionToken)->first();
+    
+            if (!$donation) {
+                return response()->json(['error' => 'Donation not found'], 404);
+            }
+    
+            if (in_array($donation->status, ['Completed', 'Failed'])) {
+                return response()->json(['message' => 'Transaction already updated', 'status' => $donation->status]);
+            }
+    
+            // If not updated by webhook, manually verify with payment provider
+            $status = self::verifyTrans($transactionToken);
+    
+            // Update status if necessary
+            if ($status) {
+                $donation->update(['status' => $status]);
+            }
+    
+            return response()->json([
+                'message' => 'Transaction verified',
+                'status' => $donation->status
+            ]);
+        }
+    
+        public function success(Request $request)
+        {
+            // Retrieve query parameters
+            $transID = $request->query('TransID', '');
+            $transactionToken = $request->query('TransactionToken', '');
+            $ccdApproval = $request->query('CCDapproval', '');
+            $pnrID = $request->query('PnrID', '');
+            $companyRef = $request->query('CompanyRef', '');
+    
+            // Find the donation record
+            $donation = Donation::where('transaction_token', $transactionToken)->first();
+    
+            if ($donation) {
+                // Update donation status
+                $donation->update([
+                    'status' => 'completed',
+                    'transaction_id' => $transID,
+                    'ccd_approval' => $ccdApproval,
+                    'company_ref' => $companyRef,
+                ]);
+    
+                // Fetch the donor's email from the donor table
+                $donor = Donor::find($donation->donor_id);
+    
+                if ($donor && !empty($donor->email)) {
+                    // Generate a PDF invoice
+                    $pdf = PDF::loadView('dashboard.invoice', compact('donation'));
+    
+                    // Send the email
+                    Mail::to($donor->email)->send(new DonationConfirmationMail($donation, $pdf));
+                }
+    
+                return view('donate.success', compact('transID', 'ccdApproval', 'companyRef'));
+            } else {
+                return redirect()->route('donate.form')->with('error', 'Donation not found.');
+            }
+        }
+    
+        public function checkoutDonation(Request $request)
+        {
+            // Retrieve the donation and donor information
+            $donation = Donation::where('transaction_token', $request->input('transaction_token'))->first();
+            $donor = $donation ? Donor::find($donation->donor_id) : null;
+    
+            return view('donate.checkout', [
+                'donor' => $donor,
+                'donation' => $donation,
+                'transaction_token' => $request->input('transaction_token')
+            ])->with('error', 'Payment failed: ' . ($response->StatusMessage ?? 'Unknown error'));
+    
+        }
+    
+        public function checkoutDonationPayment(Request $request)
+        {
+    
+            // Validate the selected payment method
+            $validator = Validator::make($request->all(), [
+                'payment_method' => 'required|string|in:VISA,MasterCard,MTNZM,AirtelZM',
+            ]);
+    
+            if ($validator->fails()) {
+                return view('donate.checkout')->withErrors($validator)->withInput();
+            }
+    
+            $paymentMethod = $request->input('payment_method');
+    
+            // Retrieve the donation and donor information
+            $donation = Donation::where('transaction_token', $request->input('transaction_token'))->first();
+            $donor = $donation ? Donor::find($donation->donor_id) : null;
+            $transactionToken = $request->input('transaction_token');
+    
+    
+            // Process the payment based on the selected method
+            switch ($paymentMethod) {
+                case 'VISA':
+                case 'MasterCard':
+                    // Validate credit card fields
+                    $request->validate([
+                        'card_number' => 'required|numeric',
+                        'expiry_date' => 'required|string',
+                        'cvv' => 'required|numeric',
+                    ]);
+    
+                    $xmlData = '<?xml version="1.0" encoding="utf-8"?>' .
+                        '<API3G>' .
+                        '<CompanyToken>' . DonationController::$CompanyToken . '</CompanyToken>' .
+                        '<Request>chargeTokenCreditCard</Request>' .
+                        '<TransactionToken>' . $transactionToken . '</TransactionToken>' .
+                        '<CreditCardNumber>' . $request->input('card_number') . '</CreditCardNumber>' .
+                        '<CreditCardExpiry>' . $request->input('expiry_date') . '</CreditCardExpiry>' .
+                        '<CreditCardCVV>' . $request->input('cvv') . '</CreditCardCVV>' .
+                        '<CardHolderName>' . $request->input('card_holder_name') . '</CardHolderName>' .
+                        '<ChargeType></ChargeType>' .
+                        '<ThreeD>' .
+                        '<Enrolled>Y</Enrolled>' .
+                        '<Paresstatus>Y</Paresstatus>' .
+                        '<Eci>05</Eci>' .
+                        '<Xid>DYYVcrwnujRMnHDy1wlP1Ggz8w0=</Xid>' .
+                        '<Cavv>mHyn+7YFi1EUAREAAAAvNUe6Hv8=</Cavv>' .
+                        '<Signature>_</Signature>' .
+                        '<Veres>AUTHENTICATION_SUCCESSFUL</Veres>' .
+                        '<Pares>eAHNV1mzokgW/isVPY9GFSCL0EEZkeyg7</Pares>' .
+                        '</ThreeD>' .
+                        '</API3G>';
+    
+                    $ch = curl_init();
+    
+                    if (!$ch) {
+                        die("Couldn't initialize a cURL handle");
+                    }
+                    curl_setopt($ch, CURLOPT_URL, self::$endpoint_url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlData);
+    
+                    $result = curl_exec($ch);
+    
+                    if ($result === false) {
+                        die("cURL execution failed: " . curl_error($ch));
+                    }
+    
+                    curl_close($ch);
+    
+                    $response = simplexml_load_string($result);
+    
+                    if (isset($response['response']->Result) && $response['response']->Result == '000') {
+                        // Payment successful
+                        return redirect()->route('donate.success')->with('message', 'Payment successful!');
+                    } else {
+                        // Payment failed
+                        return view('donate.checkout', [
+                            'donor' => $donor,
+                            'donation' => $donation,
+                            'transaction_token' => $request->input('transaction_token')
+                        ])->with('error', 'Payment failed: ' . ($response->StatusMessage ?? 'Unknown error'));
+    
+                    }
+    
+                case 'MTNZM':
+                case 'AirtelZM':
+                    // Validate mobile money fields
+                    $request->validate([
+                        'phone_number' => 'required|numeric',
+                    ]);
+    
+                    $xmlData =
+                        '<?xml version="1.0" encoding="utf-8"?>' .
+                        '<API3G>' .
+                        '<CompanyToken>' . DonationController::$CompanyToken . '</CompanyToken>' .
+                        '<Request>ChargeTokenMobile</Request>' .
+                        '<TransactionToken>' . $request->input('transaction_token') . '</TransactionToken>' .
+                        '<PhoneNumber>' . $request->input('phone_number') . '</PhoneNumber>' .
+                        '<MNO>' . $request->input('payment_method') . '</MNO>' .
+                        '<MNOcountry>zambia</MNOcountry>' .
+                        '</API3G>';
+    
+                    $ch = curl_init();
+    
+                    if (!$ch) {
+                        die("Couldn't initialize a cURL handle");
+                    }
+    
+                    curl_setopt($ch, CURLOPT_URL, self::$endpoint_url);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml'));
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlData);
+    
+                    $result = curl_exec($ch);
+    
+                    if ($result === false) {
+                        die("cURL execution failed: " . curl_error($ch));
+                    }
+    
+                    curl_close($ch);
+    
+                    // $response = simplexml_load_string($result);
+    
+                    // Check if the curl_exec operation was successful
+                    if ($result === false) {
+                        die("cURL execution failed: " . curl_error($ch));
+                    }
+    
+                    $status = self::verifyTrans($request->input('transaction_token'));
+    
+                    if ($status['tran_status'] == 'success') {
+    
+                        $donation = Donation::where('transaction_token', $request->input('transaction_token'))->first();
+    
+                        $this->success($request);
+    
+                        return response()->json([
+                            'message' => 'SUCCESS: Payment initiated, waiting for approval',
+                            'transaction_token' => $request->input('transaction_token'),
+                            'donation' => $donation,
+                            'donor' => $donor
+                        ]);
+    
+                        // return redirect()->route('donate.success', [
+                        //     'TransID' => $donation->transaction_id,
+                        //     'TransactionToken' => $donation->transaction_token,
+                        //     'CCDapproval' => $donation->ccd_approval,
+                        //     'PnrID' => $donation->pnr_id,
+                        //     'CompanyRef' => $donation->company_ref
+                        // ])->with('message', 'Payment successful!');
+    
+                    } else if ($status['tran_status'] == 'failed') {
+                        $this->failure();
+                        // return redirect()->route('donate.failure')->with('error', 'Payment failed: ' . ($response->StatusMessage ?? 'Unknown error'));
+                        return response()->json([
+                            'message' => 'TRANSACTION FAILED: ' . $status['tran_status'],
+                            'transaction_token' => $request->input('transaction_token'),
+                            'donation' => $donation,
+                            'donor' => $donor
+                        ]);
+                    } else {
+                        sleep(5);
+                        $status = self::verifyTrans($request->input('transaction_token'));
+                        return response()->json([
+                            'message' => 'WAITING: Payment initiated, waiting for approval',
+                            'transaction_token' => $request->input('transaction_token'),
+                            'donation' => $donation,
+                            'donor' => $donor
+                        ]);
+                    }
+    
+                default:
+                    
+                    return response()->json([
+                        'message' => 'DEFAULT: SOMETHING WENT WRONG',
+                        'transaction_token' => $request->input('transaction_token'),
+                        'donation' => $donation,
+                        'donor' => $donor
+                    ]);
+    
+                    // return view('donate.checkout', [
+                    //     'donor' => $donor,
+                    //     'donation' => $donation,
+                    //     'transaction_token' => $request->input('transaction_token')
+                    // ])->with('error', 'Payment failed: ' . ($response->StatusMessage ?? 'Unknown error'));
+    
+            }
+        }
+    
+        // Failure Page
+        public function failure()
+        {
+            return view('donate.failure');
+        }
+    
+
+    public function processDonation(Request $request)
+    {
+
+        // Validate form data
+        $validator = Validator::make($request->all(), [
+            'fullname' => 'nullable|string|max:255',
+            'organization_name' => 'nullable|string|max:255',
+            'email_address' => 'required|email',
+            'physical_address' => 'nullable|string',
+            'donation_type' => 'required|string',
+            'donation_amount' => 'required|numeric|min:1',
+            'donation_currency' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Generate a unique Company Reference
+        $companyRef = strtoupper(substr(md5(time()), 0, 5));
+
+        // Use CreateChargeToken function to generate a transaction token
+        $response = self::CreateChargeToken(
+            "https://donate.cejzambia.org/donation_success.html",
+            "https://donate.cejzambia.org/donation_failed.html",
+            "Donation Payment",
+            $request->input('donation_amount'),
+            $request->input('donation_currency')
+        );
+
+        // Check if the token was successfully generated
+        if ($response['response']->Result == '000') {
+            $transToken = (string) $response['response']->TransToken;
+            $transRef = (string) $response['response']->TransRef;
+
+            // Store donor information
+            $donor = Donor::firstOrCreate([
+                'email' => $request->input('email_address'),
+            ], [
+                'first_name' => $request->input('fullname') ?? 'Anonymous',
+                'last_name' => '',
+                'address' => $request->input('physical_address') ?? 'Unknown',
+                'phone_number' => $request->input('phone_number') ?? '',
+                'organization_name' => $request->input('organization_name') ?? '',
+            ]);
+
+            // Store donation information
+            $donation = new Donation([
+                'donor_id' => $donor->id,
+                'fullname' => $request->input('fullname') ?? 'Anonymous Donor',
+                'organization_name' => $request->input('organization_name') ?? 'Anonymous Organization',
+                'email_address' => $request->input('email_address'),
+                'physical_address' => $request->input('physical_address') ?? 'Unknown Address',
+                'donation_type' => $request->input('donation_type'),
+                'donation_amount' => $request->input('donation_amount'),
+                'donation_currency' => $request->input('donation_currency'),
+                'transaction_token' => $transToken,
+                'transaction_id' => $transRef,
+                'company_ref' => $companyRef,
+                'status' => 'Submitted',
+            ]);
+
+            $donation->save();
+
+            // Fetch donor and donation information
+            $donor = Donor::find($donation->donor_id);
+
+            // Send donor and donation information to the view
+            return view('donate.checkout', [
+                'transaction_token' => $transToken,
+                'transaction_ref' => $transRef,
+                'donation_amount' => $request->input('donation_amount'),
+                'donation_currency' => $request->input('donation_currency'),
+                'company_ref' => $companyRef,
+                'donor' => $donor,
+                'donation' => $donation,
+            ]);
+
+
+            // Redirect donor to DPO payment gateway
+            // return redirect()->away("https://secure.3gdirectpay.com/payv2.php?ID=$transToken");
+        } else {
+            return back()->with('error', 'Payment gateway error: ' . ($response['response']->ResultExplanation ?? 'Unknown error.'));
+        }
+    }
+
+
+
+
+
+}
