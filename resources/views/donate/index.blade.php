@@ -99,7 +99,7 @@
                 <div class="row col-12 col-md-12 justify-content-between align-items-center p-3">
                     <div class="col-6 text-center">
                         <iframe class="w-100"
-                            src="https://youtube.com/embed/-ovPlEjw3YIs?autoplay=1&mute=1&loop=1&playlist=ovPlEjw3YIs"
+                            src="https://www.youtube.com/embed/ovPlEjw3YIs?si=PNVXJZ8IEjaTAsz2"
                             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                         </iframe>
                         <p class="mt-2">Water Security</p>
@@ -107,7 +107,7 @@
 
                     <div class="col-6 text-center">
                         <iframe class="w-100"
-                            src="https://youtu.be/VFjF8aI692s?autoplay=1&mute=1&loop=1&playlist=VFjF8aI692s"
+                            src="https://www.youtube.com/embed/VFjF8aI692s?si=CswWGGRmzJ2JlYqP"
                             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                         </iframe>
                         <p class="mt-2">Environmental Protection</p>
@@ -115,7 +115,7 @@
 
                     <div class="col-6 text-center">
                         <iframe class="w-100"
-                            src="https://www.youtube.com/embed/-zYxcyyaTKs?autoplay=1&mute=1&loop=1&playlist=-zYxcyyaTKs"
+                            src="https://www.youtube.com/embed/NKUs-YXLcfg?si=OAp2TcJZ43rlbKoH"
                             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                         </iframe>
                         <p class="mt-2">Sustainable Energy</p>
@@ -123,7 +123,7 @@
 
                     <div class="col-6 text-center">
                         <iframe class="w-100"
-                            src="https://youtu.be/hAVUWOa-BaA?autoplay=1&mute=1&loop=1&playlist=hAVUWOa-BaA"
+                            src="https://www.youtube.com/embed/hAVUWOa-BaA?si=OFjF0c48e_meWysX"
                             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                         </iframe>
                         <p class="mt-2">Agriculture & Livelihood Support</p>
@@ -131,7 +131,7 @@
 
                     <div class="col-6  text-center">
                         <iframe class="w-100"
-                            src="https://youtu.be/Lp-i-U_PPM0?autoplay=1&mute=1&loop=1&playlist=Lp-i-U_PPM0"
+                            src="https://www.youtube.com/embed/Lp-i-U_PPM0?si=pkccBWwkLKhKhyrN"
                             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                         </iframe>
                         <p class="mt-2">Extractive Industries</p>
@@ -139,7 +139,7 @@
 
                     <div class="col-6 text-center">
                         <iframe class="w-100"
-                            src="https://youtu.be/9IeCysSegjk?autoplay=1&mute=1&loop=1&playlist=9IeCysSegjk"
+                            src="https://www.youtube.com/embed/9IeCysSegjk?si=2Ny13MD4CyZDPtFz"
                             frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
                         </iframe>
                         <p class="mt-2">Climate Change</p>
