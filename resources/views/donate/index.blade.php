@@ -53,18 +53,18 @@
     
 
     <div class=" w-100">
-        <nav class="navbar navbar-expand-lg navbar-light bg-white p-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white px-3">
             <div class="container-fluid d-flex justify-content-between align-items-center">
                 <a class="navbar-brand" href="#">
-                    <img src="{{ asset('assets/images/logos/cej-logo.png') }}" alt="Logo 1" width="120"
+                    <img src="{{ asset('assets/images/logos/cej-logo.png') }}" alt="CEJ Logo" width="80"
                         class="d-inline-block align-text-top">
-                    <p class="fw-bold" style="font-size: medium;"> <small>Our Environment <br> Our Responsibility</small></p>
+                    <p class="fw-bold" style="font-size: small;"> <small>Our Environment <br> Our Responsibility</small></p>
                 </a>
 
                 <a class="navbar-brand" href="#">
-                    <img src="{{ asset('assets/images/logos/dpo-logo.jpg') }}" alt="Logo 2" width="120"
+                    <img src="{{ asset('assets/images/logos/dpo-logo.jpg') }}" alt="DPO logo" width="80"
                         class="d-inline-block align-text-top">
-                    <p  style="font-size: medium;" class="fw-bold"> <small>Secure Payment Gateway</small>
+                    <p  style="font-size: small;" class="fw-bold"> <small>Secure Payment Gateway</small>
                     </p>
                 </a>
     
@@ -92,7 +92,16 @@
     <div class="container my-3">
 
         <h2 class="text-center mb-4" style="color: #050050">Support Our Cause</h2>
-        <hr class="mb-4 text-center" width="30%" style="border: 2px solid #ffd000; margin: 0 auto;">
+
+        <style>
+             .thick {
+            height: 5px;
+            background-color: black;
+            border: none;
+        }
+        </style>
+
+        <div class="mb-4" style="width: 30%; height: 10px; background-color: #e46d16; margin: 0 auto;"></div>
 
         <div class="row d-flex justify-content-center bg-white p-4">
             <div class="col-md-6  order-lg-1 order-2 ">
@@ -149,29 +158,6 @@
 
                 </div>
 
-                <hr>
-
-                <div>
-
-                    <h2 class="mb-3 text-center" style="color: #050050">Alternative Way to Give</h2>
-
-                    <div class="row col-12 col-md-12">
-                        <div class="col-6">
-                            <h4 style="color: #050050">By Mail</h4>
-                            <p>Centre for Environment Justice Plot No. 100/ZMT 77 HC, Twinpalm Road, IbexHill, Lusaka,
-                                Zambia</p>
-                        </div>
-
-                        <div class="col-6">
-                            <div style="border-left: 2px solid #ffd000;" class="px-3">
-                                <h4 style="color: #050050">By Phone</h4>
-                                <p>+260 954 713 003</p>
-                                <p>Monday - Friday</p>
-                                <p>8:00 AM - 5:00 PM</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="col-md-6  order-lg-2 order-1">
@@ -263,6 +249,32 @@
 
             </div>
         </div>
+
+        <div class="row w-100 my-4">
+
+            {{-- <div class="mb-4" style="width: 30%; height: 10px; background-color: #e46d16; margin: 0 auto;"></div> --}}
+
+
+            <h2 class="mb-3 text-center" style="color: #050050">Alternative Way to Give</h2>
+
+            <div class="row col-12 col-md-12">
+                <div class="col-6">
+                    <h4 style="color: #050050">By Mail</h4>
+                    <p>Centre for Environment Justice Plot No. 100/ZMT 77 HC, Twinpalm Road, IbexHill, Lusaka,
+                        Zambia</p>
+                </div>
+
+                <div class="col-6">
+                    <div style="border-left: 2px solid #ffd000;" class="px-3">
+                        <h4 style="color: #050050">By Phone</h4>
+                        <p>+260 954 713 003</p>
+                        <p>Monday - Friday</p>
+                        <p>8:00 AM - 5:00 PM (CAT)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
