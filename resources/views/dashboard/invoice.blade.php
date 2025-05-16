@@ -119,10 +119,10 @@
             <td style="padding: 8px; border: 1px solid #ddd;"><strong>Transaction ID:</strong></td>
             <td style="padding: 8px; border: 1px solid #ddd;">{{ $donation->transaction_id }}</td>
             </tr>
-            <tr>
+            <!-- <tr>
             <td style="padding: 8px; border: 1px solid #ddd;"><strong>Approval Code:</strong></td>
             <td style="padding: 8px; border: 1px solid #ddd;">{{ $donation->ccd_approval }}</td>
-            </tr>
+            </tr> -->
             <tr>
             <td style="padding: 8px; border: 1px solid #ddd;"><strong>Company Reference:</strong></td>
             <td style="padding: 8px; border: 1px solid #ddd;">{{ $donation->company_ref }}</td>

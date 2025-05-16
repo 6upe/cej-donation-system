@@ -41,7 +41,7 @@
                             <div class="d-flex align-items-center pb-1">
                                 <span
                                     class="me-2 rounded-circle bg-light-danger round-20 d-flex align-items-center justify-content-center">
-                                    <i class="ti ti-arrow-down-right text-danger"></i>
+                                    <i class="ti ti-arrow-up-left text-success"></i>
                                 </span>
                                 <p class="text-dark me-1 fs-3 mb-0">ZMW</p>
                                 <p class="fs-3 mb-0">{{ number_format($monthlyDonationsZMW, 2) }}</p>

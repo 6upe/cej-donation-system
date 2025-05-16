@@ -14,8 +14,8 @@ class DonationController extends Controller
 {
 
     private static $endpoint_url = "https://secure.3gdirectpay.com/API/v6/";
-    private static $CompanyToken = "8D3DA73D-9D7F-4E09-96D4-3D44E7A83EA3";
-    private static $serviceType = "5525";
+    private static $CompanyToken = "46E3F4A9-0685-414B-8017-A4DE2F852CE3";
+    private static $serviceType = "98409";
     public static $ref;
 
     // Instead of passing $ref in constructor, set it dynamically inside a method
@@ -98,8 +98,8 @@ class DonationController extends Controller
 
         // Use CreateChargeToken function to generate a transaction token
         $response = self::CreateChargeToken(
-            "https://donate.cejzambia.org/success",
-            "https://donate.cejzambia.org/failure",
+            "https://donate.cejzambia.org/donate/success",
+            "https://donate.cejzambia.org/donate/failure",
             "Donation Payment",
             $request->input('donation_amount'),
             $request->input('donation_currency')
@@ -358,6 +358,8 @@ class DonationController extends Controller
             case 'MasterCard':
 
                 return redirect()->away("https://secure.3gdirectpay.com/payv2.php?ID=$transactionToken");
+                // return redirect()->away("https://secure.3gdirectpay.com/payv3.php?ID=$transactionToken");
+                // https://secure.3gdirectpay.com/payv3.php?
               
             case 'MTNZM':
             case 'AirtelZM':

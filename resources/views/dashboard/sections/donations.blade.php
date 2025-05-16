@@ -80,11 +80,11 @@
         </div>
 
         <!-- Pagination -->
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-12 d-flex justify-content-center" style="height: 10px;">
                 {{ $donations->links() }}
             </div>
-        </div>
+        </div> -->
     </div>
 
 

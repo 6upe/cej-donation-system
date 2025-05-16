@@ -53,28 +53,34 @@
     
 
     <div class=" w-100">
-        <nav class="navbar navbar-expand-lg navbar-light bg-white px-3">
-            <div class="container-fluid d-flex justify-content-between align-items-center">
-                <a class="navbar-brand" href="#">
-                    <img src="{{ asset('assets/images/logos/cej-logo.png') }}" alt="CEJ Logo" width="80"
-                        class="d-inline-block align-text-top">
-                    <p class="fw-bold" style="font-size: small;"> <small>Our Environment <br> Our Responsibility</small></p>
-                </a>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white px-3" style="height: 120px;">
 
-                <a class="navbar-brand" href="#">
-                    <img src="{{ asset('assets/images/logos/dpo-logo.jpg') }}" alt="DPO logo" width="80"
-                        class="d-inline-block align-text-top">
-                    <p  style="font-size: small;" class="fw-bold"> <small>Secure Payment Gateway</small>
-                    </p>
-                </a>
-    
+            <div class="container-fluid d-flex justify-content-between align-items-center" style="padding: 0;">
+
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="{{ asset('assets/images/logos/cej-logo.png') }}" alt="CEJ Logo" width="60"
+                class="d-inline-block align-text-top">
+                <div class="ms-2">
+                <p class="fw-bold mb-0" style="font-size: 10px;">Our Environment</p>
+                <p class="fw-bold mb-0" style="font-size: 10px;">Our Responsibility</p>
+                </div>
+            </a>
+
+            <a class="navbar-brand align-items-center" href="#">
+                <img src="{{ asset('assets/images/logos/dpo-logo.jpg') }}" alt="DPO logo" width="60"
+                class="align-text-top">
+             
+                <p class="fw-bold mb-0" style="font-size: 10px;">Secure Payment Gateway</p>
+                
+            </a>
+        
             </div>
         </nav>
 
         <div class="row align-items-center" style="background-color: #006400;">
             <div class="col-md-6 text-white p-4">
                 <h3>DONATE NOW TO PROTECT NATURE AND LIVELIHOODS</h3>
-                <p> At CEJ, we are dedicated to creating a sustainable future
+                <p style="text-align: justify;"> At CEJ, we are dedicated to creating a sustainable future
                     for our communities. Through relentless effort and
                     collaboration with our partners, we strive to promote
                     environmental sustainability, social equity and improve
@@ -82,7 +88,7 @@
                     collective endeavor that requires the support of
                     compassionate individuals like you.</p>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" style="height: 400px; overflow: hidden;">
                 <img src="{{ asset('assets/images/backgrounds/donate 3.jpg') }}" alt="CEJ-Project"
                     class="img-fluid w-100 h-100" style="object-fit: cover;">
             </div>
@@ -101,7 +107,7 @@
         }
         </style>
 
-        <div class="mb-4" style="width: 30%; height: 10px; background-color: #e46d16; margin: 0 auto;"></div>
+        <div class="mb-4" style="width: 30%; height: 3px; background-color: #e46d16; margin: 0 auto;"></div>
 
         <div class="row d-flex justify-content-center bg-white p-4">
             <div class="col-md-6  order-lg-1 order-2 ">
@@ -228,17 +234,16 @@
                     <div style="background: rgb(243, 243, 243); border-radius: 10px;" class="row col-12 my-3">
                         <div class="col-6 mt-3">
                             <div class="d-flex justify-content-around mx-3">
-                                <img src="{{ asset('donate/assets/visa.png') }}" alt="Visa Logo" width="60">
-                                <img src="{{ asset('donate/assets/mastercard.png') }}" alt="MasterCard Logo"
-                                    width="70">
+                                <img src="{{ asset('donate/assets/visa.png') }}" alt="Visa Logo" style="width: 60px; height: 60px; object-fit: contain;">
+                                <img src="{{ asset('donate/assets/mastercard.png') }}" alt="MasterCard Logo" style="width: 60px; height: 60px; object-fit: contain;">
                             </div>
                             <p class="text-center fw-bold mt-2">Credit/Debit Card</p>
                         </div>
     
                         <div class="col-6 mt-3">
                             <div class="d-flex justify-content-around mx-3">
-                                <img src="{{ asset('donate/assets/mtn.png') }}" alt="Visa Logo" width="60">
-                                <img src="{{ asset('donate/assets/airtel.jpg') }}" alt="MasterCard Logo" width="90">
+                                <img src="{{ asset('donate/assets/mtn.png') }}" alt="MTN Logo" style="width: 60px; height: 60px; object-fit: contain;">
+                                <img src="{{ asset('donate/assets/airtel.jpg') }}" alt="Airtel Logo" style="width: 60px; height: 60px; object-fit: contain;">
                             </div>
                             <p class="text-center fw-bold mt-2">Mobile Money</p>
                         </div>
@@ -258,18 +263,19 @@
             <h2 class="mb-3 text-center" style="color: #050050">Alternative Way to Give</h2>
 
             <div class="row col-12 col-md-12">
-                <div class="col-6">
+                <div class="col-6 text-end">
                     <h4 style="color: #050050">By Mail</h4>
-                    <p>Centre for Environment Justice Plot No. 100/ZMT 77 HC, Twinpalm Road, IbexHill, Lusaka,
-                        Zambia</p>
+                    <p  style="font-size: small;">Centre for Environment Justice,<br>
+                        Plot No. 100/ZMT 77 HC, Off Twinpalm Road, IbexHill,<br>
+                        Lusaka, Zambia.</p>
                 </div>
 
                 <div class="col-6">
-                    <div style="border-left: 2px solid #ffd000;" class="px-3">
+                    <div style="border-left: 3px solid #e46d16;" class="px-3">
                         <h4 style="color: #050050">By Phone</h4>
-                        <p>+260 954 713 003</p>
-                        <p>Monday - Friday</p>
-                        <p>8:00 AM - 5:00 PM (CAT)</p>
+                        <p style="font-size: small;">+260 954 713 003
+                        <br>Monday - Friday<br>
+                        8:00 AM - 5:00 PM (CAT)</p>
                     </div>
                 </div>
             </div>

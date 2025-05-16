@@ -63,7 +63,7 @@
     <div class="container">
         <!-- Logo Section -->
         <div class="logo">
-            <img src="{{ public_path('donate/assets/cej-logo.png') }}" width="60px" alt="cej logo">
+           <img class="logo" src="{{ public_path('assets/images/logos/cej-logo.png') }}" width="60px" alt="CEJ Logo">
         </div>
 
         <!-- Header -->
@@ -75,7 +75,7 @@
         <p>Your generosity is instrumental in advancing the work of the <strong>Centre for Environment Justice (CEJ)</strong> as we continue to protect our environment and empower communities across Zambia.</p>
         
          <!-- Donation Details Table -->
-         <table>
+         <!-- <table>
             <tr>
                 <th>Transaction ID</th>
                 <td>{{ $donation->transaction_id }}</td>
@@ -92,7 +92,7 @@
                 <th>Date</th>
                 <td>{{ $donation->created_at->format('F d, Y') }}</td>
             </tr>
-        </table>
+        </table> -->
         
         <p>Thank you for supporting CEJ’s mission to improve the lives of the communities we serve.</p>
         <p>Please find attached a receipt for your records.</p>

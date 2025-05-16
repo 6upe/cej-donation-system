@@ -125,12 +125,26 @@
 
                                 <div class="mb-3">
                                     <div class="payment-options d-flex justify-content-center">
-                                        <img src="assets/visa.png" alt="VISA">
-                                        <img src="assets/mastercard.png" alt="MasterCard">
-                                        <img src="assets/mtn.png" alt="MTNZM">
-                                        <img src="assets/airtel.jpg" alt="AirtelZM">
+                                        <img src="assets/visa.png" alt="VISA" class="payment-option-img">
+                                        <img src="assets/mastercard.png" alt="MasterCard" class="payment-option-img">
+                                        <img src="assets/mtn.png" alt="MTNZM" class="payment-option-img">
+                                        <img src="assets/airtel.jpg" alt="AirtelZM" class="payment-option-img">
                                     </div>
                                 </div>
+                                <style>
+                                    .payment-option-img {
+                                        transition: box-shadow 0.2s, transform 0.2s;
+                                        border-radius: 8px;
+                                    }
+                                    .payment-option-img:hover, .payment-option-img:focus {
+                                        box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 0 0 2px #198754;
+                                        transform: translateY(-2px) scale(1.05);
+                                        z-index: 1;
+                                    }
+                                    .payment-option-img {
+                                        outline: none;
+                                    }
+                                </style>
 
                                 <div id="payment-form-container" class="w-75"></div>
 
