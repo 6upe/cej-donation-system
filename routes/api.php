@@ -3,5 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebhookController;
+use App\Http\Controllers\PaymentController;
 
 Route::post('/webhook/transaction-update', [WebhookController::class, 'handle']);
+
+Route::get('/', function () {
+    return response()->json(['status' => 'Api Running...']);
+});
+
+Route::post('/create-token', [PaymentController::class, 'createToken']);
+Route::post('/charge-token', [PaymentController::class, 'chargeToken']);
+Route::post('/verify-token', [PaymentController::class, 'verifyToken']);
+
+Route::post('/test-payment-success', [PaymentController::class, 'testPaymentSuccess']);
