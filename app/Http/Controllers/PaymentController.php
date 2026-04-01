@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TicketMail;
+use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
@@ -20,9 +21,10 @@ class PaymentController extends Controller
 
     public function __construct()
     {
-        // $this->companyToken = env('DPO_COMPANY_TOKEN');
-        $this->companyToken = 'B3F59BE7-0756-420E-BB88-1D98E7A6B040';
-        $this->serviceType = '54841'; // Example service type
+        $this->companyToken = env('DPO_COMPANY_TOKEN');
+        $this->serviceType = env('DPO_SERVICE_TYPE');
+        // $this->companyToken = 'B3F59BE7-0756-420E-BB88-1D98E7A6B040';
+        // $this->serviceType = '54841'; // Example service type
         $this->baseUrl = "https://secure.3gdirectpay.com/API/v6/";
     }
 
@@ -133,7 +135,8 @@ class PaymentController extends Controller
                     'referral' => $request->referral,
                     'transaction_token' => (string)$body->TransToken,
                     'payment_status' => 'pending',
-                    'product_status' => 'initial'
+                    'product_status' => 'initial',
+                    'ticket_code' => 'Not Generated'
                 ]);
 
                 return response()->json([
@@ -332,9 +335,15 @@ class PaymentController extends Controller
             ]);
 
             if (isset($body->Result) && $body->Result == "000") {
-
-                // ✅ Get correct participant using token (VERY IMPORTANT)
+               
                 $participant = Participant::where('transaction_token', $request->token)->first();
+
+                 if (!$participant) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Participant not found'
+                    ], 404);
+                }
 
                 if ($participant) {
 
@@ -342,38 +351,45 @@ class PaymentController extends Controller
                     if ($participant->payment_status !== 'paid') {
 
                         $participant->payment_status = 'paid';
+                        $participant->product_status = 'registered';
+                        $participant->ticket_code = 'EPD2026-' . strtoupper(Str::random(10));
                         $participant->save();
 
-                        Log::info('Payment verified for participant', [
+                        Log::info('TEST: Payment verified for participant', [
                             'email' => $participant->email,
-                            'participant_id' => $participant->id
+                            'participant_id' => $participant->id,
+                            'transaction_token' => $participant->transaction_token,
+                            'ticket_package' => $participant->ticket_package,
+                            'payment_status' => $participant->payment_status,
+                            'product_status' => $participant->product_status,
+                            'ticket_code' => $participant->ticket_code
                         ]);
 
-                        try {
-                            // ✅ Generate QR Code
-                            $qrData = url('/ticket/' . $participant->id);
-                            $qr = QrCode::size(150)->generate($qrData);
+                        // ✅ Generate QR SVG and store temporarily
+                        $qrData = url('/ticket/' . $participant->ticket_code);
+                        
+                        $qrSvg = QrCode::size(200)->format('svg')->generate($qrData);
 
-                            // ✅ Generate PDF
-                            $pdf = Pdf::loadView('pdf.ticket', [
-                                'participant' => $participant,
-                                'qr' => $qr
-                            ]);
+                        $tempPath = storage_path('app/public/qr_temp_' . $participant->id . '.svg');
+                        file_put_contents($tempPath, $qrSvg);
 
-                            // ✅ Send Email
-                            Mail::to($participant->email)->send(
-                                new TicketMail($participant, $pdf->output())
-                            );
+                        // ✅ Generate PDF referencing the SVG file
+                        $pdf = Pdf::loadView('pdf.ticket', [
+                            'participant' => $participant,
+                            'qrPath' => $tempPath
+                        ]);
 
-                            Log::info('Ticket email sent', [
-                                'email' => $participant->email
-                            ]);
+                        // ✅ Send email
+                        Mail::to($participant->email)->send(
+                            new TicketMail($participant, $pdf->output())
+                        );
 
-                        } catch (\Exception $mailError) {
-                            Log::error('Email sending failed', [
-                                'error' => $mailError->getMessage()
-                            ]);
-                        }
+                        // ✅ Clean up temp file
+                        @unlink($tempPath);
+
+                        Log::info('TEST: Ticket email sent', [
+                            'email' => $participant->email
+                        ]);
                     }
                 }
 
@@ -403,78 +419,123 @@ class PaymentController extends Controller
         }
     }
 
+    public function getByTicketCode($ticket_code)
+    {
+        $participant = Participant::where('ticket_code', $ticket_code)->first();
 
-
-public function testPaymentSuccess(Request $request)
-{
-    $request->validate([
-        'token' => 'required|string'
-    ]);
-
-    try {
-        $participant = Participant::where('transaction_token', $request->token)->first();
+        Log::info('Get Participant by Ticket Code', [
+            'ticket_code' => $ticket_code,
+            'participant_found' => $participant ? true : false
+        ]);
 
         if (!$participant) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Participant not found'
+                'message' => 'Invalid or unknown ticket'
             ], 404);
         }
 
-        // if ($participant->payment_status !== 'paid') {
-            $participant->payment_status = 'paid';
-            $participant->save();
-
-            Log::info('TEST: Payment verified for participant', [
-                'email' => $participant->email,
-                'participant_id' => $participant->id
-            ]);
-
-            // ✅ Generate QR SVG and store temporarily
-            $qrData = url('/ticket/' . $participant->id);
-            $qrSvg = QrCode::size(200)->format('svg')->generate($qrData);
-
-            $tempPath = storage_path('app/public/qr_temp_' . $participant->id . '.svg');
-            file_put_contents($tempPath, $qrSvg);
-
-            // ✅ Generate PDF referencing the SVG file
-            $pdf = Pdf::loadView('pdf.ticket', [
-                'participant' => $participant,
-                'qrPath' => $tempPath
-            ]);
-
-            // ✅ Send email
-            Mail::to($participant->email)->send(
-                new TicketMail($participant, $pdf->output())
-            );
-
-            // ✅ Clean up temp file
-            @unlink($tempPath);
-
-            Log::info('TEST: Ticket email sent', [
-                'email' => $participant->email
-            ]);
-        // }
-
         return response()->json([
             'status' => 'success',
-            'message' => 'TEST: Payment simulated successfully and email sent'
+            'data' => $participant
         ]);
-
-    } catch (\Exception $e) {
-        Log::error('TEST: Payment simulation failed', [
-            'error' => $e->getMessage()
-        ]);
-
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Test failed'
-        ], 500);
     }
-}
 
 
 
+
+    public function show($code)
+    {
+        $participant = Participant::where('ticket_code', $code)->firstOrFail();
+
+        return view('ticket.show', compact('participant'));
+    }
+
+    public function updateStatus(Request $request, $code)
+    {
+        $participant = Participant::where('ticket_code', $code)->firstOrFail();
+
+        $request->validate([
+            'status' => 'required|in:registered,attended,collected,cancelled'
+        ]);
+
+        $participant->status = $request->status;
+        $participant->save();
+
+        return back()->with('success', 'Status updated successfully');
+    }
+
+
+
+    
+// public function testPaymentSuccess(Request $request)
+// {
+//     $request->validate([
+//         'token' => 'required|string'
+//     ]);
+
+//     try {
+//         $participant = Participant::where('transaction_token', $request->token)->first();
+
+//         if (!$participant) {
+//             return response()->json([
+//                 'status' => 'error',
+//                 'message' => 'Participant not found'
+//             ], 404);
+//         }
+
+//         // if ($participant->payment_status !== 'paid') {
+//             $participant->payment_status = 'paid';
+//             $participant->save();
+
+//             Log::info('TEST: Payment verified for participant', [
+//                 'email' => $participant->email,
+//                 'participant_id' => $participant->id
+//             ]);
+
+//             // ✅ Generate QR SVG and store temporarily
+//             $qrData = url('/ticket/' . $participant->id);
+            
+//             $qrSvg = QrCode::size(200)->format('svg')->generate($qrData);
+
+//             $tempPath = storage_path('app/public/qr_temp_' . $participant->id . '.svg');
+//             file_put_contents($tempPath, $qrSvg);
+
+//             // ✅ Generate PDF referencing the SVG file
+//             $pdf = Pdf::loadView('pdf.ticket', [
+//                 'participant' => $participant,
+//                 'qrPath' => $tempPath
+//             ]);
+
+//             // ✅ Send email
+//             Mail::to($participant->email)->send(
+//                 new TicketMail($participant, $pdf->output())
+//             );
+
+//             // ✅ Clean up temp file
+//             @unlink($tempPath);
+
+//             Log::info('TEST: Ticket email sent', [
+//                 'email' => $participant->email
+//             ]);
+//         // }
+
+//         return response()->json([
+//             'status' => 'success',
+//             'message' => 'TEST: Payment simulated successfully and email sent'
+//         ]);
+
+//     } catch (\Exception $e) {
+//         Log::error('TEST: Payment simulation failed', [
+//             'error' => $e->getMessage()
+//         ]);
+
+//         return response()->json([
+//             'status' => 'error',
+//             'message' => 'Test failed'
+//         ], 500);
+//     }
+// }
 
 
     }

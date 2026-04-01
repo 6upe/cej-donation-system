@@ -36,7 +36,23 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
     Route::get('/donors', [DashboardController::class, 'donors'])->name('dashboard.donors');
     Route::get('/reports', [DashboardController::class, 'reports'])->name('dashboard.reports');
     Route::get('/help', [DashboardController::class, 'help'])->name('dashboard.help');
+
+
+    Route::get('/epd-participants', [DashboardController::class, 'epdParticipants'])->name('dashboard.epdParticipants');
+    Route::post('/epd-participants/update-status', [DashboardController::class, 'updateStatusAjax']);
+    
+    Route::get('/epd-participants/scanner', function () {
+        $userFirstName = auth()->user()->first_name;
+        return view('dashboard.sections.scanner', [
+            'title' => 'EPD Participants Scanner',
+            'userFirstName' => $userFirstName
+        ]);
+    })->name('dashboard.scanner');
+
 });
+
+
+
 
 
 Route::get('/', [DonationController::class, 'showForm'])->name('donate.form');
@@ -48,6 +64,9 @@ Route::prefix('donate')->group(function () {
     Route::get('/success', [DonationController::class, 'success'])->name('donate.success');
     Route::get('/failure', [DonationController::class, 'failure'])->name('donate.failure');
 });
+
+// Route::get('/ticket/{code}', [PaymentController::class, 'show']);
+// Route::post('/ticket/{code}/update-status', [PaymentController::class, 'updateStatus']);
 
 Route::get('/test', function () {
     $mno = "MTNZM";

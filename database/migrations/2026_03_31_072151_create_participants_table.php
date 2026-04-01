@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('phone');
 
             // Event Info
-            $table->string('product'); // EPD2026
+            $table->string('product'); 
             $table->decimal('amount', 10, 2);
             $table->string('currency');
 
@@ -42,14 +42,15 @@ return new class extends Migration
             // Payment tracking (important for DPO)
             $table->string('transaction_token')->nullable();
             $table->string('payment_status')->default('pending'); // pending, paid, failed
-            $table->string('product_status')->default('registered'); // registered, attended, cancelled, collected
+            $table->string('product_status')->default('initial'); // registered, attended, cancelled, collected
+            $table->string('ticket_code')->nullable(); // Unique code for ticket collection
 
             $table->timestamps();
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migrations. php artisan migrate --path=/database/migrations/2026_03_31_072151_create_participants_table.php
      */
     public function down(): void
     {

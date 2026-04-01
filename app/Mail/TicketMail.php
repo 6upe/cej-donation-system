@@ -19,9 +19,9 @@ class TicketMail extends Mailable
 
     public function build()
     {
-        return $this->subject('EPD2026 Registration Successful')
+        return $this->subject('EPD2026 Registration Successful' . $this->participant->name)
             ->view('emails.ticket')
-            ->attachData($this->pdf, 'EPD2026-Ticket.pdf', [
+            ->attachData($this->pdf, $this->participant->ticket_code . '.pdf', [
                 'mime' => 'application/pdf',
             ]);
     }

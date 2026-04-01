@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Donation;
 use App\Models\Donor;
+use App\Models\Participant;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -195,4 +197,35 @@ class DashboardController extends Controller
             'userFirstName' => $userFirstName
         ]);
     }
+
+
+    public function epdParticipants()
+    {
+        $participants = Participant::latest()->paginate(10);
+
+        return view('dashboard.sections.epd_participants', compact('participants'));
+    }
+
+    public function updateStatusAjax(Request $request)
+    {
+        $request->validate([
+            'participant_id' => 'required|exists:participants,id',
+            'status' => 'required|string'
+        ]);
+
+        Log::info('Updating participant status', [
+            'participant_id' => $request->participant_id,
+            'status' => $request->status
+        ]);
+
+        $participant = Participant::findOrFail($request->participant_id);
+        $participant->product_status = $request->status;
+        $participant->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Status updated successfully'
+        ]);
+    }
+
 }

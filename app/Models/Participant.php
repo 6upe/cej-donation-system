@@ -25,6 +25,7 @@ class Participant extends Model
         'referral',
         'transaction_token',
         'payment_status',
-        'product_status'
+        'product_status',
+        'ticket_code'
     ];
 }
