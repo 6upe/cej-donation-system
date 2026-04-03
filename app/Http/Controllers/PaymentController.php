@@ -448,7 +448,7 @@ class PaymentController extends Controller
     {
         $participant = Participant::where('ticket_code', $code)->firstOrFail();
 
-        return view('ticket.show', compact('participant'));
+        return view('epd.ticket', compact('participant'));
     }
 
     public function updateStatus(Request $request, $code)
