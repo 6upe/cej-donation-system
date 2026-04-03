@@ -8,7 +8,7 @@ use App\Http\Controllers\PaymentController;
 Route::post('/webhook/transaction-update', [WebhookController::class, 'handle']);
 
 Route::get('/', function () {
-    return response()->json(['status' => 'Api Running...']);
+    return response()->json(['status' => 'CEJ Payments Api Running...']);
 });
 
 Route::post('/create-token', [PaymentController::class, 'createToken']);
