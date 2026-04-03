@@ -160,10 +160,9 @@
     <!-- Actions -->
     <div class="actions d-flex justify-content-end flex-wrap gap-2 mb-3">
         @auth
-        <a href="{{ route('dashboard.scanner', $participant->id) }}" class="btn btn-dark">Change Status</a>
+        <a href="{{ route('dashboard.scanner', $participant->id) }}" class="btn btn-xs btn-dark"><i class="bi bi-pencil-square"></i> Change Status</a>
         @endauth
-        <button class="btn btn-success" onclick="window.print()">Print / Save</button>
-        <a href="mailto:?subject=Participant Ticket&body=Participant: {{ $participant->name }}%0ATicket Code: {{ $participant->ticket_code }}" class="btn btn-info text-white">Share via Email</a>
+        <button class="btn btn-xs btn-success" onclick="window.print()"><i class="bi bi-printer"></i> Print / Save</button>
     </div>
 
     <!-- Footer -->
