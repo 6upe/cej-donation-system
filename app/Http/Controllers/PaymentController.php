@@ -85,8 +85,8 @@ class PaymentController extends Controller
                 <PaymentCurrency>" . $request->currency . "</PaymentCurrency>
                 <CompanyRef>" . $companyRef . "</CompanyRef>
 
-                <RedirectURL>".$_ENV['FRONTEND_URL']."/success.html</RedirectURL>
-                <BackURL>".$_ENV['FRONTEND_URL']."/failure.html</BackURL>
+                <RedirectURL>".$_ENV['FRONTEND_URL']."/success</RedirectURL>
+                <BackURL>".$_ENV['FRONTEND_URL']."/failure</BackURL>
 
                 <CompanyRefUnique>0</CompanyRefUnique>
                 <PTL>5</PTL>
