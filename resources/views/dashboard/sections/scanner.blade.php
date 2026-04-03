@@ -9,35 +9,24 @@
             <div class="card-body p-4">
 
                 <h5 class="card-title fw-semibold mb-4">QR Code Scanner</h5>
+                <p class="text-warning">Point the camera at the QR code on the participant's ticket to view their details and update their status. </p>
 
-                <!-- CAMERA -->
-                <div id="reader" style="width:100%; max-width:500px;"></div>
+                <div class="row">
 
-                <!-- RESULT -->
-                <div id="result" class="mt-4" style="display:none;">
-                    <div class="card p-3">
-
-                        <h6 class="fw-semibold">Participant Found</h6>
-
-                        <p><strong>Name:</strong> <span id="p_name"></span></p>
-                        <p><strong>Email:</strong> <span id="p_email"></span></p>
-                        <p><strong>Package:</strong> <span id="p_package"></span></p>
-
-                        <!-- STATUS UPDATE -->
-                        <select id="status" class="form-select mb-3">
-                            <option value="registered">Registered</option>
-                            <option value="attended">Attended</option>
-                            <option value="collected">Collected</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
-
-                        <button onclick="updateStatus()" class="btn btn-success">
-                            Update Status
-                        </button>
-
+                     <!-- RESULT -->
+                    <div id="result" class="col-md-6 col-lg-6 col-sm-10 col-xs-12 mt-4" style="display:none;">
+                        
                     </div>
-                </div>
 
+                    <div class="col-md-6 col-lg-6 col-sm-10 col-xs-12 alert alert-info">
+                        <!-- CAMERA -->
+                        <div class="mb-3">
+                            <button id="flipCameraBtn" class="btn btn-primary">Flip Camera</button>
+                        </div>
+                        <div id="reader" class="w-100"></div>
+                    </div>
+                   
+                </div>
             </div>
         </div>
 
@@ -46,6 +35,7 @@
 
 <!-- QR LIBRARY -->
 <script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 let ticket_code = null;
@@ -72,16 +62,46 @@ function fetchParticipant(id) {
     })
         .then(res => res.json())
         .then(data => {
-            document.getElementById('result').style.display = 'block';
+            if(data.data) {
+                
+                participant_id = data.data.id;
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('result').innerHTML = `
+                    <div class="card p-3">
+                        <div class="alert alert-success">
+                            <h5 class="card-title mb-3"> Participant found: ${data.data.name}</h5>
+                        </div>
+                        <p><strong>Name:</strong> ${data.data.name}</p>
+                        <p><strong>Email:</strong> ${data.data.email}</p>
+                        <p><strong>Package:</strong> ${data.data.ticket_package}</p>
+                        <p><strong>Status:</strong> ${data.data.product_status}</p>
 
-            console.log("Participant Data:", data);
+                        <select id="status" class="form-select mb-3">
+                            <option value="registered">Select Status</option>
+                            <option value="registered">Registered</option>
+                            <option value="attended">Attended</option>
+                            <option value="collected">Collected</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
 
-            document.getElementById('p_name').innerText = data.data.name;
-            document.getElementById('p_email').innerText = data.data.email;
-            document.getElementById('p_package').innerText = data.data.ticket_package;
-            participant_id = data.data.id;
+                        <button onclick="updateStatus()" class="btn btn-success">
+                            Update Status
+                        </button>
+                    </div>
+                `;
 
-            document.getElementById('status').value = data.data.product_status;
+                return;
+            } else {
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('result').innerHTML = `
+                    <div class="alert alert-danger">
+                        Participant not found for ticket code: ${ticket_code}
+                    </div>
+                `;
+                return;
+            }
+
+            
         });
 }
 
@@ -103,25 +123,86 @@ function updateStatus() {
     })
     .then(res => res.json())
     .then(data => {
-        alert(data.message);
+
+        console.log("Update Response:", data);
+
+        if (data.status === 'success') {
+            Swal.fire("Success", "Status updated successfully!", "success");
+            fetchParticipant(ticket_code);
+                   
+        } else {
+            Swal.fire("Error", "Failed to update status", "error");
+        }
+        
     });
 }
 
 // Init scanner
-const html5QrCode = new Html5Qrcode("reader");
+// const html5QrCode = new Html5Qrcode("reader");
 
+// Html5Qrcode.getCameras().then(devices => {
+//     if (devices && devices.length) {
+//         html5QrCode.start(
+//             devices[0].id,
+//             {
+//                 fps: 10,
+//                 qrbox: 250
+//             },
+//             onScanSuccess
+//         );
+//     }
+// });
+
+
+
+let html5QrCode = new Html5Qrcode("reader");
+let cameras = [];
+let currentCameraIndex = 0;
+
+// Start scanner
+function startScanner(cameraId) {
+    html5QrCode.start(
+        cameraId,
+        {
+            fps: 10,
+            qrbox: 250
+        },
+        onScanSuccess
+    ).catch(err => {
+        console.error("Error starting scanner:", err);
+    });
+}
+
+// Flip camera
+document.getElementById('flipCameraBtn').addEventListener('click', () => {
+    if (!cameras.length) return;
+
+    // Stop current camera first
+    html5QrCode.stop().then(() => {
+        // Move to next camera
+        currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
+        startScanner(cameras[currentCameraIndex].id);
+    }).catch(err => console.error("Error stopping scanner:", err));
+});
+
+// Init cameras
 Html5Qrcode.getCameras().then(devices => {
     if (devices && devices.length) {
-        html5QrCode.start(
-            devices[0].id,
-            {
-                fps: 10,
-                qrbox: 250
-            },
-            onScanSuccess
-        );
+        cameras = devices;
+        startScanner(cameras[currentCameraIndex].id);
+    } else {
+        alert("No cameras found on this device.");
     }
-});
+}).catch(err => console.error("Camera error:", err));
+
+// Scan success callback
+function onScanSuccess(decodedText) {
+    console.log("QR Data:", decodedText);
+    const parts = decodedText.split('/');
+    ticket_code = parts[parts.length - 1];
+    fetchParticipant(ticket_code);
+}
+
 </script>
 
 @endsection
