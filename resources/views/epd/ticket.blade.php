@@ -100,8 +100,6 @@
         <img src="{{ asset('assets/images/logos/cej-logo.png') }}" alt="Logo">
         <h2>Participant Ticket</h2>
         <p class="text-muted mb-1"><strong>Centre for Environment Justice (CEJ)</strong></p>
-        <p class="text-muted mb-1">IbexHill, Lusaka, Zambia</p>
-        <p class="text-muted">Email: <a href="mailto:Info@cejzambia.org">Info@cejzambia.org</a> | Phone: +260 954 710003</p>
     </div>
 
     <!-- Ticket Code -->

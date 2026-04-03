@@ -113,14 +113,14 @@
     <!-- HEADER -->
     <div class="header">
         <div class="logo">
-            <img src="{{ public_path('public\assets\images\logos\cej-logo.png') }}" alt="EPD2026 Logo">
+            <img src="{{ public_path('assets/images/logos/cej-logo.png') }}" alt="EPD2026 Logo">
         </div>
 
         <div class="company">
-            <strong>EPD2026 Conference</strong><br>
-            Lusaka, Zambia<br>
-            info@epd2026.org<br>
-            +260 XXX XXX XXX
+            <strong>Environmental protection Dialogue - EPD2026</strong><br>
+            Plot No. 100/ZMT 77 HC, Off Twin Palm road, Ibex Hill, Lusaka, Zambia<br>
+            info@cejzambia.org, centreforenvironmentjustice@gmail.com<br>
+            +260 954 710003 | +260 977 256172 | +260 966 603537
         </div>
     </div>
 
@@ -130,16 +130,16 @@
     <div class="section">
         <table>
             <tr>
-                <td class="label">Receipt No:</td>
-                <td class="value">RCPT-{{ $participant->id }}</td>
-                <td class="label">Ticket No:</td>
-                <td class="value">TKT-{{ $participant->id }}</td>
+                <td class="label">Ticket Code:</td>
+                <td class="value">{{ $participant->ticket_code }}</td>
+                <td class="label">Ticket status:</td>
+                <td class="value">{{ $participant->product_status }}</td>
             </tr>
             <tr>
                 <td class="label">Date:</td>
-                <td class="value">{{ date('d M Y') }}</td>
-                <td class="label">Status:</td>
-                <td class="value">PAID</td>
+                <td class="value">{{ date('d M Y') }}{{ date(' H:i:s') }}</td>
+                <td class="label">Payment Status:</td>
+                <td class="value">{{ $participant->payment_status }}</td>
             </tr>
         </table>
     </div>
@@ -185,11 +185,11 @@
                         <table>
                             <tr>
                                 <td class="label">Package:</td>
-                                <td class="value">{{ $participant->ticketPackage }}</td>
+                                <td class="value">{{ $participant->ticket_package }}</td>
                             </tr>
                             <tr>
                                 <td class="label">Category:</td>
-                                <td class="value">{{ $participant->delegateCategory }}</td>
+                                <td class="value">{{ $participant->delegate_category }}</td>
                             </tr>
                             <tr>
                                 <td class="label">Amount Paid:</td>

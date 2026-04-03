@@ -18,7 +18,7 @@
         <tr>
             <td style="padding:20px; text-align:center; border-bottom:1px solid #eee;">
                 <img src="https://cejzambia.org/wp-content/uploads/2023/01/High-Resolution4-1-768x799.png" height="60" alt="EPD Logo">
-                <h2 style="margin:10px 0 0; font-size:18px; color:#333;">EPD2026 Conference</h2>
+                <h2 style="margin:10px 0 0; font-size:18px; color:#333;">Environmental protection Dialogue - EPD2026</h2>
             </td>
         </tr>
 
@@ -38,7 +38,7 @@
 
                 <!-- SUMMARY BOX -->
                 <div style="background:#f9f9f9; padding:15px; border-radius:6px; margin:20px 0;">
-                    <p style="margin:5px 0;"><strong>Package:</strong> {{ $participant->ticketPackage }}</p>
+                    <p style="margin:5px 0;"><strong>Package:</strong> {{ $participant->ticket_package }}</p>
                     <p style="margin:5px 0;"><strong>Amount Paid:</strong> ZMW {{ number_format($participant->amount, 2) }}</p>
                     <p style="margin:5px 0;"><strong>Status:</strong> Paid</p>
                 </div>
@@ -62,8 +62,7 @@
         <!-- FOOTER -->
         <tr>
             <td style="padding:20px; text-align:center; font-size:12px; color:#888; border-top:1px solid #eee;">
-                Lusaka, Zambia<br>
-                support@epd2026.org | +260 XXX XXX XXX
+                <a href="https://cejzambia.org/">Visit Our Website</a>
             </td>
         </tr>
 
@@ -72,6 +71,10 @@
 </td>
 </tr>
 </table>
+
+<div style="text-align: center; font-size: 12px; color: #888888;">
+    Powered By <a href="https://pikozm.com" style="color: #007bff;">Piko Technology</a>
+</div>
 
 </body>
 </html>
