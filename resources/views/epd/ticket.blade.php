@@ -119,7 +119,7 @@
         <div class="ticket-footer">
             <!-- Admin button (optional, visible if logged in) -->
             @auth
-            <a href="{{ route('dashboard.participants.edit', $participant->id) }}" class="btn btn-outline-primary">
+            <a href="{{ route('dashboard.scanner', $participant->id) }}" class="btn btn-outline-primary">
                 Change Status
             </a>
             @endauth

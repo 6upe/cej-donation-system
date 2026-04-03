@@ -40,7 +40,7 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
 
 
     Route::get('/epd-participants', [DashboardController::class, 'epdParticipants'])->name('dashboard.epdParticipants');
-    Route::post('/epd-participants/update-status', [DashboardController::class, 'updateStatusAjax']);
+    Route::post('/epd-participants/update-status', [DashboardController::class, 'updateStatusAjax'])->name('dashboard.epdParticipants.updateStatus');
     
     Route::get('/epd-participants/scanner', function () {
         $userFirstName = auth()->user()->first_name;
