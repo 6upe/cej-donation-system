@@ -66,7 +66,7 @@ Route::prefix('donate')->group(function () {
     Route::get('/failure', [DonationController::class, 'failure'])->name('donate.failure');
 });
 
-Route::get('/ticket/{code}', [PaymentController::class, 'show']);
+Route::get('/ticket/{code}', [PaymentController::class, 'show'])->name('ticket.show');
 // Route::post('/ticket/{code}/update-status', [PaymentController::class, 'updateStatus']);
 
 Route::get('/test', function () {

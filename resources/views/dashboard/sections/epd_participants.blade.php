@@ -110,7 +110,7 @@
 
                                 <!-- ACTION -->
                                 <td>
-                                    <a href="#" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('ticket.show', $participant->ticket_code) }}" class="btn btn-sm btn-primary">
                                         View
                                     </a>
                                 </td>
