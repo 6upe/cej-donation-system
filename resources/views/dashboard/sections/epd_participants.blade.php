@@ -58,7 +58,7 @@
                                 <th>Amount</th>
                                 <th>Status</th>
                                 <th>Date</th>
-                                <th>Action</th>
+                                <th>Ticket Code</th>
                             </tr>
                         </thead>
 
@@ -108,12 +108,18 @@
                                     </p>
                                 </td>
 
-                                <!-- ACTION -->
-                                <td>
-                                    <a href="{{ route('ticket.show', $participant->ticket_code) }}" class="btn btn-sm btn-primary">
-                                        View
+                                
+                            <!-- TICKET CODE -->
+                                <td class="flex justify-center align-content-center">
+                                    <p class="mb-0 fw-normal">
+                                        {{ $participant->ticket_code }}
+                                    </p>
+                                    <a target="_blank()" href="{{ route('ticket.show', $participant->ticket_code) }}" class="btn btn-sm w-100 btn-primary">
+                                        View Ticket
                                     </a>
                                 </td>
+
+
                             </tr>
                             @endforeach
                         </tbody>

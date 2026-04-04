@@ -98,8 +98,9 @@
     <!-- Header -->
     <div class="ticket-header">
         <img src="{{ asset('assets/images/logos/cej-logo.png') }}" alt="Logo">
-        <h2>Participant Ticket</h2>
+        <h2>Participant Veri-Ticket</h2>
         <p class="text-muted mb-1"><strong>Centre for Environment Justice (CEJ)</strong></p>
+        <small class="text-danger">This is not an Official Ticket</small>
     </div>
 
     <!-- Ticket Code -->
