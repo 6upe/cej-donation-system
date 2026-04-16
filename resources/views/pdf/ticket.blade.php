@@ -117,10 +117,13 @@
         </div>
 
         <div class="company">
-            <strong>Environmental protection Dialogue - EPD2026</strong><br>
-            Plot No. 100/ZMT 77 HC, Off Twin Palm road, Ibex Hill, Lusaka, Zambia<br>
-            info@cejzambia.org, centreforenvironmentjustice@gmail.com<br>
-            +260 954 710003 | +260 977 256172 | +260 966 603537
+            
+        <img src="{{ public_path('assets/images/logos/epd.jpeg') }}" alt="epd Banner" style="width: 100px; margin-bottom: 10px;">
+
+            <strong>Environmental Protection Dialogue - EPD2026</strong><br>
+            Plot No. 37741, Pitta Road, Off Twin Palm Road, Ibex Hill, Lusaka – Zambia <br>
+            epd@cejzambia.org / programmes@cejzambia.org <br>
+            +260 966 762215 / +260 971 479976 / +260 977 123413<br>
         </div>
     </div>
 

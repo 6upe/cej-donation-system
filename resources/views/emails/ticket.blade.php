@@ -18,42 +18,61 @@
         <tr>
             <td style="padding:20px; text-align:center; border-bottom:1px solid #eee;">
                 <img src="https://cejzambia.org/wp-content/uploads/2023/01/High-Resolution4-1-768x799.png" height="60" alt="EPD Logo">
+                <img src="https://cejzambia.org/wp-content/uploads/2023/01/epd.jpeg" height="60" alt="EPD Logo">
                 <h2 style="margin:10px 0 0; font-size:18px; color:#333;">Environmental protection Dialogue - EPD2026</h2>
             </td>
         </tr>
 
         <!-- BODY -->
         <tr>
-            <td style="padding:30px; color:#333;">
+            <td style="padding:30px; color:#333; line-height:1.6;">
 
-                <p style="margin:0 0 15px;">Hello <strong>{{ $participant->name }}</strong>,</p>
+                <p style="margin:0 0 15px;"><strong>2026 Environmental Protection Dialogue - EPD2026</strong></p>
 
-                <p style="margin:0 0 15px; line-height:1.6;">
-                    Your registration for <strong>EPD2026</strong> has been successfully completed.
+                <p style="margin:0 0 15px;">
+                    Dear Valued Delegate,
                 </p>
 
-                <p style="margin:0 0 15px; line-height:1.6;">
-                    Your payment has been received, and your official ticket is attached to this email.
+                <p style="margin:0 0 15px;">
+                    We are happy to inform you that your registration for the upcoming 2026 Environmental Protection Dialogue - EPD2026 has been completed. The Environmental Protection Dialogue (EPD) is an environmental accountability space for all sectors aimed at co-creating solutions to Zambia’s key environmental challenges through effective dialogue.
                 </p>
 
-                <!-- SUMMARY BOX -->
-                <div style="background:#f9f9f9; padding:15px; border-radius:6px; margin:20px 0;">
-                    <p style="margin:5px 0;"><strong>Package:</strong> {{ $participant->ticket_package }}</p>
-                    <p style="margin:5px 0;"><strong>Amount Paid:</strong> ZMW {{ number_format($participant->amount, 2) }}</p>
-                    <p style="margin:5px 0;"><strong>Status:</strong> Paid</p>
-                </div>
+                <p style="margin:0 0 15px;">
+                    For your convenience, please find attached your ticket receipt, which includes a QR code to present at the registration desk, where you will be issued your ID.
+                </p>
 
-                <p style="margin:0 0 15px; line-height:1.6;">
-                    Please present your ticket (QR code) at the event for verification.
+                <p style="margin:0 0 10px;"><strong>Event Details:</strong></p>
+
+                <p style="margin:0;">
+                    Date: 14th – 16th October 2026<br>
+                    Time: 08:30AM – 05:00PM<br>
+                    Theme: Safeguarding Our Future: Addressing the Impact of Environmental Degradation in Zambia.<br>
+                    Location: Mulungushi International Conference Centre, Kenneth Kaunda wing, Lusaka, Zambia
+                </p>
+
+                <p style="margin:15px 0;">
+                    Your participation will play a crucial role in fostering meaningful discussions and shaping actionable strategies.
+                </p>
+
+                <p style="margin:0 0 15px;">
+                    Please feel free to reach out if you have any questions or require further information. We are here to ensure you have a seamless and rewarding experience throughout the event.
+                </p>
+
+                <p style="margin:0 0 10px;"><strong>Contact Information:</strong></p>
+
+                <p style="margin:0;">
+                    Email: epd@cejzambia.org<br>
+                    Phone: +260 966 762 215 | +260 977 123 413<br>
+                    Website: https://epd.cejzambia.org/epd2026/
                 </p>
 
                 <p style="margin-top:20px;">
-                    Thank you for being part of EPD2026.
+                    We look forward to seeing you at the 2026 Environmental Protection Dialogue.
                 </p>
 
                 <p style="margin-top:20px;">
-                    Regards,<br>
-                    <strong>EPD2026 Team</strong>
+                    Best regards,<br>
+                    <strong>Centre For Environment Justice</strong>
                 </p>
 
             </td>
