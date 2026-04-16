@@ -112,19 +112,29 @@
 
     <!-- HEADER -->
     <div class="header">
-        <div class="logo">
-            <img src="{{ public_path('assets/images/logos/cej-logo.png') }}" alt="EPD2026 Logo">
-        </div>
+       <table width="100%" style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+            <tr>
+                <!-- LOGO LEFT -->
+                <td style="width: 50%; vertical-align: middle;">
+                    <img src="{{ public_path('assets/images/logos/cej-logo.png') }}" style="height: 60px;">
+                </td>
 
-        <div class="company">
-            
-        <img src="{{ public_path('assets/images/logos/epd.jpeg') }}" alt="epd Banner" style="width: 100px; margin-bottom: 10px;">
+                <!-- BANNER RIGHT -->
+                <td style="width: 50%; text-align: right; vertical-align: middle;">
+                    <img src="{{ public_path('assets/images/logos/epd.jpeg') }}" style="height: 60px;">
+                </td>
+            </tr>
 
-            <strong>Environmental Protection Dialogue - EPD2026</strong><br>
-            Plot No. 37741, Pitta Road, Off Twin Palm Road, Ibex Hill, Lusaka – Zambia <br>
-            epd@cejzambia.org / programmes@cejzambia.org <br>
-            +260 966 762215 / +260 971 479976 / +260 977 123413<br>
-        </div>
+            <!-- TEXT BELOW -->
+            <tr>
+                <td colspan="2" style="padding-top: 10px; font-size: 11px;">
+                    <strong>Environmental Protection Dialogue - EPD2026</strong><br>
+                    Plot No. 37741, Pitta Road, Off Twin Palm Road, Ibex Hill, Lusaka – Zambia <br>
+                    epd@cejzambia.org / programmes@cejzambia.org <br>
+                    +260 966 762215 / +260 971 479976 / +260 977 123413
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div class="title">Payment Receipt & Ticket</div>
