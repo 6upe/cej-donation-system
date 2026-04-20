@@ -40,6 +40,7 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
 
 
     Route::get('/epd-participants', [DashboardController::class, 'epdParticipants'])->name('dashboard.epdParticipants');
+    Route::get('/epd-participants/search', [DashboardController::class, 'search'])->name('dashboard.epdParticipants.search');
     Route::post('/epd-participants/update-status', [DashboardController::class, 'updateStatusAjax'])->name('dashboard.epdParticipants.updateStatus');
     
     Route::get('/epd-participants/scanner', function () {

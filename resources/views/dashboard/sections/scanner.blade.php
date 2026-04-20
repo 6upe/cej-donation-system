@@ -74,10 +74,9 @@ function fetchParticipant(id) {
                         <p><strong>Name:</strong> ${data.data.name}</p>
                         <p><strong>Email:</strong> ${data.data.email}</p>
                         <p><strong>Package:</strong> ${data.data.ticket_package}</p>
-                        <p><strong>Status:</strong> ${data.data.product_status}</p>
+                        <p><strong>Status:</strong> ${data.data.product_status.join(', ')}</p>
 
-                        <select id="status" class="form-select mb-3">
-                            <option value="registered">Select Status</option>
+                        <select id="status" class="form-select mb-3" multiple>
                             <option value="registered">Registered</option>
                             <option value="attended">Attended</option>
                             <option value="collected">Collected</option>
@@ -107,7 +106,8 @@ function fetchParticipant(id) {
 
 // Update status
 function updateStatus() {
-    const status = document.getElementById('status').value;
+    const selectedOptions = Array.from(document.getElementById('status').selectedOptions)
+    .map(option => option.value);
 
     fetch('/dashboard/epd-participants/update-status', {
         method: 'POST',
@@ -118,7 +118,7 @@ function updateStatus() {
         },
         body: JSON.stringify({
             participant_id: participant_id,
-            status: status
+            status: selectedOptions
         })
     })
     .then(res => res.json())
@@ -136,24 +136,6 @@ function updateStatus() {
         
     });
 }
-
-// Init scanner
-// const html5QrCode = new Html5Qrcode("reader");
-
-// Html5Qrcode.getCameras().then(devices => {
-//     if (devices && devices.length) {
-//         html5QrCode.start(
-//             devices[0].id,
-//             {
-//                 fps: 10,
-//                 qrbox: 250
-//             },
-//             onScanSuccess
-//         );
-//     }
-// });
-
-
 
 let html5QrCode = new Html5Qrcode("reader");
 let cameras = [];

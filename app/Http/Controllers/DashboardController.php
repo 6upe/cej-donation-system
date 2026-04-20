@@ -228,4 +228,35 @@ class DashboardController extends Controller
         ]);
     }
 
+
+    public function search(Request $request)
+{
+    $query = \App\Models\Participant::query();
+
+    // 🔍 SEARCH (partial matching)
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'LIKE', "%{$search}%")
+              ->orWhere('email', 'LIKE', "%{$search}%")
+              ->orWhere('ticket_code', 'LIKE', "%{$search}%");
+        });
+    }
+
+    // 🎯 FILTER: PAYMENT STATUS
+    if ($request->filled('payment_status')) {
+        $query->where('payment_status', $request->payment_status);
+    }
+
+    // 🎯 FILTER: PACKAGE
+    if ($request->filled('package')) {
+        $query->where('ticket_package', $request->package);
+    }
+
+    $participants = $query->latest()->paginate(10)->withQueryString();
+
+    return view('dashboard.sections.epd_participants', compact('participants'));
+}
+
 }

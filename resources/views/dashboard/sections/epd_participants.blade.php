@@ -48,6 +48,46 @@
 
 
                 <div class="table-responsive">
+<form method="GET" action="{{ route('dashboard.epdParticipants.search') }}">
+    <div class="row mb-3">
+
+        <!-- SEARCH INPUT -->
+        <div class="col-md-4 mb-1 mt-1">
+            <input 
+                type="text" 
+                name="search" 
+                class="form-control" 
+                placeholder="Search name, email, ticket code..."
+                value="{{ request('search') }}">
+        </div>
+
+        <!-- FILTER: PAYMENT STATUS -->
+        <div class="col-md-3 mb-1 mt-1">
+            <select name="payment_status" class="form-select">
+                <option value="">All Status</option>
+                <option value="paid" {{ request('payment_status')=='paid' ? 'selected' : '' }}>Paid</option>
+                <option value="pending" {{ request('payment_status')=='pending' ? 'selected' : '' }}>Pending</option>
+                <option value="failed" {{ request('payment_status')=='failed' ? 'selected' : '' }}>Failed</option>
+            </select>
+        </div>
+
+        <!-- FILTER: PACKAGE -->
+        <div class="col-md-3 mb-1 mt-1">
+            <select name="package" class="form-select">
+                <option value="">All Packages</option>
+                <option value="standard">Standard</option>
+                <option value="vip">VIP</option>
+            </select>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="col-md-2 mb-1 mt-1">
+            <button class="btn btn-primary w-100">Search</button>
+        </div>
+
+    </div>
+</form>
+
                     <table class="table text-nowrap mb-0 align-middle">
 
                         <thead class="text-dark fs-4">
@@ -136,5 +176,18 @@
         </div>
     </div>
 </div>
+
+
+<script>
+let timer;
+
+document.querySelector('input[name="search"]').addEventListener('keyup', function () {
+    clearTimeout(timer);
+
+    timer = setTimeout(() => {
+        this.form.submit();
+    }, 500); // delay to avoid too many requests
+});
+</script>
 
 @endsection
