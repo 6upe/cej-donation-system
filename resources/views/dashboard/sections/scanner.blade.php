@@ -63,6 +63,8 @@ function fetchParticipant(id) {
         .then(res => res.json())
         .then(data => {
             if(data.data) {
+
+            console.log("Participant Data:", data.data);
                 
                 participant_id = data.data.id;
                 document.getElementById('result').style.display = 'block';
@@ -74,7 +76,7 @@ function fetchParticipant(id) {
                         <p><strong>Name:</strong> ${data.data.name}</p>
                         <p><strong>Email:</strong> ${data.data.email}</p>
                         <p><strong>Package:</strong> ${data.data.ticket_package}</p>
-                        <p><strong>Status:</strong> ${data.data.product_status.join(', ')}</p>
+                        <p><strong>Status:</strong> ${data.data.product_status)}</p>
 
                         <select id="status" class="form-select mb-3" multiple>
                             <option value="registered">Registered</option>
