@@ -146,11 +146,23 @@
                     </span>
                 </div>
             </div>
-            <div class="row mb-2"><div class="col-4 fw-bold">Product Status:</div>
+            <div class="row mb-2">
+                <div class="col-4 fw-bold">Product Status:</div>
                 <div class="col-8">
-                    <span class="status-badge {{ $participant->product_status == 'attended' ? 'attended' : 'not-attended' }}">
-                        {{ ucfirst($participant->product_status) }}
-                    </span>
+                    @php
+                        $statuses = $participant->product_status ?? [];
+                    @endphp
+
+                    @foreach($statuses as $status)
+                        <span class="status-badge 
+                            {{ $status == 'attended' ? 'attended' : '' }}
+                            {{ $status == 'registered' ? 'registered' : '' }}
+                            {{ $status == 'collected' ? 'collected' : '' }}
+                            {{ $status == 'cancelled' ? 'cancelled' : '' }}">
+                            
+                            {{ ucfirst($status) }}
+                        </span>
+                    @endforeach
                 </div>
             </div>
         </div>

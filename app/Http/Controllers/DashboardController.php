@@ -207,26 +207,37 @@ class DashboardController extends Controller
     }
 
     public function updateStatusAjax(Request $request)
-    {
-        $request->validate([
-            'participant_id' => 'required|exists:participants,id',
-            'status' => 'required|string'
-        ]);
+{
+    $request->validate([
+        'participant_id' => 'required|exists:participants,id',
+        'status' => 'required|array',
+    ]);
 
-        Log::info('Updating participant status', [
-            'participant_id' => $request->participant_id,
-            'status' => $request->status
-        ]);
+    Log::info('Updating participant status', [
+        'participant_id' => $request->participant_id,
+        'status' => $request->status
+    ]);
 
-        $participant = Participant::findOrFail($request->participant_id);
-        $participant->product_status = $request->status;
-        $participant->save();
+    $participant = Participant::findOrFail($request->participant_id);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Status updated successfully'
-        ]);
+    // Get current statuses (ensure it's an array)
+    $statuses = $participant->product_status ?? [];
+
+    // Add only if not already present
+    if (!in_array($request->status, $statuses)) {
+        $statuses[] = $request->status;
     }
+
+    // Save back
+    $participant->product_status = $statuses;
+    $participant->save();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Status updated successfully',
+        'data' => $participant->product_status
+    ]);
+}
 
 
     public function search(Request $request)

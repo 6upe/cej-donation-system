@@ -149,7 +149,13 @@
                 <td class="label">Date:</td>
                 <td class="value">{{ date('d M Y') }}{{ date(' H:i:s') }}</td>
                 <td class="label">Payment Status:</td>
-                <td class="value">{{ $participant->payment_status }}</td>
+                <td class="value">
+                    @foreach($participant->product_status ?? [] as $status)
+                        <span style="padding:4px 8px; margin-right:5px; background:#e3f2fd; border-radius:4px;">
+                            {{ ucfirst($status) }}
+                        </span>
+                    @endforeach
+                </td>
             </tr>
         </table>
     </div>
