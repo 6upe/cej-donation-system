@@ -135,7 +135,7 @@ class PaymentController extends Controller
                     'referral' => $request->referral,
                     'transaction_token' => (string)$body->TransToken,
                     'payment_status' => 'pending',
-                    'product_status' => ['initial'],
+                    'product_status' => json_encode(['initial']),
                     'ticket_code' => 'Not Generated'
                 ]);
 
@@ -348,10 +348,10 @@ class PaymentController extends Controller
                 if ($participant) {
 
                     // Only process if not already paid
-                    if (!in_array('paid', $participant->product_status ?? [])) {
+                    if (!in_array('paid', json_decode($participant->product_status, true) ?? [])) {
 
                         // $participant->payment_status = 'paid';
-                        $participant->product_status = ['paid','registered'];
+                        $participant->product_status = json_encode(['paid','registered']);
                         $participant->ticket_code = 'EPD2026-' . strtoupper(Str::random(10));
                         $participant->save();
 
