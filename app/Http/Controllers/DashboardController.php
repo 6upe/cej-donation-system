@@ -206,11 +206,12 @@ class DashboardController extends Controller
         return view('dashboard.sections.epd_participants', compact('participants'));
     }
 
-    public function updateStatusAjax(Request $request)
+public function updateStatusAjax(Request $request)
 {
     $request->validate([
         'participant_id' => 'required|exists:participants,id',
         'status' => 'required|array',
+        
     ]);
 
     Log::info('Updating participant status', [
@@ -220,16 +221,17 @@ class DashboardController extends Controller
 
     $participant = Participant::findOrFail($request->participant_id);
 
-    // Get current statuses (ensure it's an array)
-    $statuses = $participant->product_status ?? [];
+    // Ensure current status is an array
+    $current = $participant->product_status ?? [];
 
-    // Add only if not already present
-    if (!in_array($request->status, $statuses)) {
-        $statuses[] = $request->status;
+    if (is_string($current)) {
+        $current = [$current]; // safety fix for old data
     }
 
-    // Save back
-    $participant->product_status = $statuses;
+    // Merge + remove duplicates
+    $updated = array_unique(array_merge($current, $request->status));
+
+    $participant->product_status = $updated;
     $participant->save();
 
     return response()->json([
