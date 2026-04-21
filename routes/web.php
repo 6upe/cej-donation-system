@@ -43,6 +43,7 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
     Route::get('/epd-participants/search', [DashboardController::class, 'search'])->name('dashboard.epdParticipants.search');
     Route::post('/epd-participants/update-status', [DashboardController::class, 'updateStatusAjax'])->name('dashboard.epdParticipants.updateStatus');
     
+    
     Route::get('/epd-participants/scanner', function () {
         $userFirstName = auth()->user()->first_name;
         return view('dashboard.sections.scanner', [
@@ -68,6 +69,7 @@ Route::prefix('donate')->group(function () {
 });
 
 Route::get('/ticket/{code}', [PaymentController::class, 'show'])->name('ticket.show');
+
 // Route::post('/ticket/{code}/update-status', [PaymentController::class, 'updateStatus']);
 
 Route::get('/test', function () {

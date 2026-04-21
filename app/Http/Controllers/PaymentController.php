@@ -348,10 +348,10 @@ class PaymentController extends Controller
                 if ($participant) {
 
                     // Only process if not already paid
-                    if (!in_array('paid', json_decode($participant->product_status, true) ?? [])) {
+                    if (!in_array('paid', $participant->product_status ?? [])) {
 
                         // $participant->payment_status = 'paid';
-                        $participant->product_status = json_encode(['paid','registered']);
+                        $participant->product_status = ['paid','registered'];
                         $participant->ticket_code = 'EPD2026-' . strtoupper(Str::random(10));
                         $participant->save();
 
@@ -418,6 +418,70 @@ class PaymentController extends Controller
             ], 500);
         }
     }
+
+    public function verifyAllPayments()
+{
+    $participants = Participant::whereNotNull('transaction_token')->get();
+
+    $updatedCount = 0;
+
+    foreach ($participants as $participant) {
+
+        try {
+            $xml = "
+            <API3G>
+                <CompanyToken>{$this->companyToken}</CompanyToken>
+                <Request>verifyToken</Request>
+                <TransactionToken>{$participant->transaction_token}</TransactionToken>
+            </API3G>";
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/xml'
+            ])->send('POST', $this->baseUrl, [
+                'body' => $xml
+            ]);
+
+            $body = simplexml_load_string($response->body());
+
+            if (isset($body->Result) && $body->Result == "000") {
+
+                $statuses = $participant->product_status ?? [];
+
+                if (is_string($statuses)) {
+                    $statuses = [$statuses];
+                }
+
+                if (!in_array('paid', $statuses)) {
+
+                    $statuses[] = 'paid';
+                    $statuses[] = 'registered';
+
+                    $participant->product_status = array_unique($statuses);
+                    $participant->payment_status = 'paid';
+
+                    // Generate ticket only if not exists
+                    if (!$participant->ticket_code || $participant->ticket_code == 'Not Generated') {
+                        $participant->ticket_code = 'EPD2026-' . strtoupper(Str::random(10));
+                    }
+
+                    $participant->save();
+                    $updatedCount++;
+                }
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Bulk Verify Error', [
+                'participant_id' => $participant->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'message' => "$updatedCount participants updated"
+    ]);
+}
 
     public function getByTicketCode($ticket_code)
     {

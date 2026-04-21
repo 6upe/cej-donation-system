@@ -14,6 +14,7 @@ Route::get('/', function () {
 Route::post('/create-token', [PaymentController::class, 'createToken']);
 Route::post('/charge-token', [PaymentController::class, 'chargeToken']);
 Route::post('/verify-token', [PaymentController::class, 'verifyToken']);
+Route::post('/verify-all-payments', [PaymentController::class, 'verifyAllPayments']);
 
 Route::get('/epd-participants/{ticket_code}', [PaymentController::class, 'getByTicketCode']);
 

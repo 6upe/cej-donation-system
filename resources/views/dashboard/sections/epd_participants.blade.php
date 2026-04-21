@@ -61,6 +61,8 @@
                 value="{{ request('search') }}">
         </div>
 
+
+
         <!-- FILTER: PAYMENT STATUS -->
         <div class="col-md-3 mb-1 mt-1">
             <select name="payment_status" class="form-select">
@@ -84,6 +86,10 @@
         <div class="col-md-2 mb-1 mt-1">
             <button class="btn btn-primary w-100">Search</button>
         </div>
+
+        <button onclick="verifyAllPayments()" class="btn btn-warning">
+            🔄 Sync Payments
+        </button>
 
     </div>
 </form>
@@ -186,8 +192,34 @@ document.querySelector('input[name="search"]').addEventListener('keyup', functio
 
     timer = setTimeout(() => {
         this.form.submit();
-    }, 500); // delay to avoid too many requests
+    }, 1500); // delay to avoid too many requests
 });
+
+function verifyAllPayments() {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This will verify all payments",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, sync"
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            fetch('/verify-all-payments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                Swal.fire("Done", data.message, "success");
+            });
+
+        }
+    });
+}
 </script>
 
 @endsection
