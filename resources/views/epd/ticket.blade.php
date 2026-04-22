@@ -149,20 +149,21 @@
             <div class="row mb-2">
                 <div class="col-4 fw-bold">Product Status:</div>
                 <div class="col-8">
-                    @php
+                   @php
                         $statuses = $participant->product_status ?? [];
+                        if (is_string($statuses)) $statuses = [$statuses];
                     @endphp
 
-                    @foreach($statuses as $status)
-                        <span class="status-badge 
-                            {{ $status == 'attended' ? 'attended' : '' }}
-                            {{ $status == 'registered' ? 'registered' : '' }}
-                            {{ $status == 'collected' ? 'collected' : '' }}
-                            {{ $status == 'cancelled' ? 'cancelled' : '' }}">
-                            
-                            {{ ucfirst($status) }}
-                        </span>
-                    @endforeach
+                    <div class="row mb-2">
+                        <div class="col-4 fw-bold">Product Status:</div>
+                        <div class="col-8">
+                            @foreach($statuses as $status)
+                                <span class="status-badge {{ $status }}">
+                                    {{ ucfirst($status) }}
+                                </span>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
