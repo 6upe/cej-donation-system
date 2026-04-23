@@ -101,6 +101,7 @@ function fetchParticipant(id) {
                     <div class="card p-3">
                         <div class="alert alert-success">
                             <h5 class="card-title mb-3"> Participant found: ${data.data.name}</h5>
+                            <h5 class="card-title mb-3"> Ticket Code: ${data.data.ticket_code}</h5>
                         </div>
                         <p><strong>Name:</strong> ${data.data.name}</p>
                         <p><strong>Email:</strong> ${data.data.email}</p>
