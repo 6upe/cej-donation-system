@@ -163,11 +163,11 @@
                 <td class="label">Payment Status:</td>
                 <td class="value">
 
-                    @foreach($statuses as $status)
+                    
                         <span style="padding:4px 8px; margin-right:5px; background:#e3f2fd; border-radius:4px;">
-                            {{ ucfirst($status) }}
+                            {{ $payment->status ?? 'N/A' }}
                         </span>
-                    @endforeach
+                   
                 </td>
             </tr>
         </table>

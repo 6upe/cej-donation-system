@@ -588,10 +588,11 @@ class PaymentController extends Controller
     return back()->with('success', 'Status updated successfully');
 }
 
-    private function generateAndSendTicket(Participant $participant)
+    private function generateAndSendTicket(Participant $participant, Payment $payment)
 {
 
     Log::info('Generating and sending ticket', [
+        'payment_id' => $payment ? $payment->id : null,
         'participant_id' => $participant->id,
         'email' => $participant->email
     ]);
@@ -613,6 +614,7 @@ class PaymentController extends Controller
         // Generate PDF
         $pdf = Pdf::loadView('pdf.ticket', [
             'participant' => $participant,
+            'payment' => $payment,
             'qrPath' => $tempPath
         ]);
 
@@ -656,6 +658,7 @@ public function resendTicket(Request $request)
     $participant = Participant::where('id', $request->participant_id)
         ->where('ticket_code', $request->ticket_code)
         ->first();
+    $payment = Payment::where('participant_id', $request->participant_id)->latest()->first();
 
     if (!$participant) {
         return response()->json([
@@ -664,7 +667,7 @@ public function resendTicket(Request $request)
         ], 404);
     }
 
-    $sent = $this->generateAndSendTicket($participant);
+    $sent = $this->generateAndSendTicket($participant, $payment);
 
     Log::info('Resend Ticket Result', [
         'participant_id' => $participant->id,
