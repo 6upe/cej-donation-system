@@ -588,7 +588,7 @@ class PaymentController extends Controller
     return back()->with('success', 'Status updated successfully');
 }
 
-    private function generateAndSendTicket(Participant $participant, Payment $payment)
+    private function generateAndSendTicket(Participant $participant, Payment $payment = null)
 {
 
     Log::info('Generating and sending ticket', [
