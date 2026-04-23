@@ -83,6 +83,9 @@ function onScanSuccess(decodedText) {
 }
 
 function fetchParticipant(id) {
+
+    showLoader("Fetching participant details...");
+
     fetch(`/api/epd-participants/${id}`, {
         headers: {
             'Accept': 'application/json',
@@ -91,6 +94,8 @@ function fetchParticipant(id) {
     })
     .then(res => res.json())
     .then(data => {
+
+        hideLoader();
 
         if (!data.data) {
             document.getElementById('result').style.display = 'block';
@@ -211,6 +216,8 @@ function fetchParticipant(id) {
 
 // Update status
 function updateStatus() {
+    showLoader("Updating status...");
+
     const selectedOptions = Array.from(
         document.querySelectorAll('#statusOptions input:checked')
     ).map(cb => cb.value);
@@ -229,7 +236,7 @@ function updateStatus() {
     })
     .then(res => res.json())
     .then(data => {
-
+        hideLoader();
         console.log("Update Response:", data);
 
         if (data.status === 'success') {
@@ -284,6 +291,8 @@ function clearStatus() {
 
 function searchByTicket() {
     const code = document.getElementById('manualTicket').value;
+
+    
 
     if (!code) {
         Swal.fire("Error", "Please enter a ticket code", "error");
