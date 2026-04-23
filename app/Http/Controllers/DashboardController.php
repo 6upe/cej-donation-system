@@ -315,7 +315,121 @@ public function clearStatusAjax(Request $request)
     return view('dashboard.sections.epd_participants', compact('participants'));
 }
 
+public function reconciliation()
+{
+    return view('dashboard.epd-payments.recon', [
+        'title' => 'EPD Reconciliation'
+    ]);
+}
 
+public function runReconciliation()
+{
+    $participants = \App\Models\Participant::all();
+    $payments = \App\Models\Payment::all()->keyBy('transaction_token');
+
+    $results = [];
+
+    foreach ($participants as $p) {
+
+        $payment = $payments[$p->transaction_token] ?? null;
+
+        $issues = [];
+
+        // ❌ Missing payment record
+        if (!$payment) {
+            $issues[] = 'Missing payment record';
+        } else {
+
+            // ❌ Amount mismatch
+            if ($p->amount != $payment->amount) {
+                $issues[] = 'Amount mismatch';
+            }
+
+            // ❌ Currency mismatch
+            if ($p->currency != $payment->currency) {
+                $issues[] = 'Currency mismatch';
+            }
+
+            // ❌ Status mismatch
+            if ($p->payment_status !== $payment->status) {
+                $issues[] = 'Status mismatch';
+            }
+        }
+
+        $results[] = [
+            'participant' => $p,
+            'payment' => $payment,
+            'issues' => $issues
+        ];
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $results
+    ]);
+}
+
+public function verifyWithDPO()
+{
+    $results = [];
+
+    \App\Models\Payment::chunk(5, function ($payments) use (&$results) {
+
+        foreach ($payments as $payment) {
+
+            // ✅ Skip already verified paid
+            if ($payment->status === 'paid') {
+                continue;
+            }
+
+            $xml = "
+            <API3G>
+                <CompanyToken>{$this->companyToken}</CompanyToken>
+                <Request>verifyToken</Request>
+                <TransactionToken>{$payment->transaction_token}</TransactionToken>
+            </API3G>";
+
+            try {
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/xml'
+                ])->send('POST', $this->baseUrl, [
+                    'body' => $xml
+                ]);
+
+                $body = simplexml_load_string($response->body());
+
+                $dpoStatus = (string) ($body->Result ?? 'unknown');
+
+                $results[] = [
+                    'token' => $payment->transaction_token,
+                    'local_status' => $payment->status,
+                    'dpo_status' => $dpoStatus,
+                    'match' => $dpoStatus === '000'
+                        ? $payment->status === 'paid'
+                        : true
+                ];
+
+                // ✅ throttle (VERY IMPORTANT)
+                sleep(2);
+
+            } catch (\Exception $e) {
+
+                $results[] = [
+                    'token' => $payment->transaction_token,
+                    'error' => $e->getMessage()
+                ];
+            }
+        }
+
+        // ✅ delay between chunks
+        sleep(5);
+    });
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $results
+    ]);
+}
 
 
 }

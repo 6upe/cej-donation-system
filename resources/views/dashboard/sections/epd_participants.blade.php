@@ -44,6 +44,7 @@
                                 </h3>
                                 <small class="text-muted">Completed payments</small>
                             </div>
+                            
                         </div>
                     </div>
 

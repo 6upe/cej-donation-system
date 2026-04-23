@@ -4,9 +4,18 @@
 
 <div class="row mb-4">
     <div class="col-lg-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="fw-bold">Payments Management</h4>
+        <div class="row mb-2 w-100">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="fw-bold">Payments Management</h4>
+                    <p class="text-muted mb-0">Manage all payment records and reconcile discrepancies</p>
+                </div>
+                <a href="{{ route('dashboard.epdReconciliation') }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-shuffle"></i> Reconcile Payments
+                </a>
+            </div>
         </div>
+        
     </div>
 </div>
 

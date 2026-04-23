@@ -47,6 +47,10 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
     Route::post('/epd-participants/clear-status', [DashboardController::class, 'clearStatusAjax'])->name('dashboard.epdParticipants.clearStatus');
     Route::post('/resend-ticket', [PaymentController::class, 'resendTicket']);
 
+    Route::get('/epd-reconciliation', [DashboardController::class, 'reconciliation'])->name('dashboard.epdReconciliation');
+    Route::post('/reconciliation/run', [DashboardController::class, 'runReconciliation']);
+    Route::post('/reconciliation/verify-dpo', [DashboardController::class, 'verifyWithDPO']);
+
     
     
     Route::get('/epd-participants/scanner', function () {
