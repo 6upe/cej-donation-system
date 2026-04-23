@@ -145,6 +145,7 @@ class PaymentController extends Controller
                     'transaction_ref' => $companyRef,
                     'amount' => $request->amount,
                     'currency' => $request->currency,
+                    'payment_method' => null,
                     'status' => 'pending',
                     'raw_response' => json_decode(json_encode($body), true),
                 ]);
