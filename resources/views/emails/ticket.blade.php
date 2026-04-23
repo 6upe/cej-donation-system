@@ -110,10 +110,6 @@
 </tr>
 </table>
 
-<div style="text-align: center; font-size: 12px; color: #888888;">
-    Powered By <a href="https://pikozm.com" style="color: #007bff;">Piko Technology</a>
-</div>
-
 </body>
 </html>
 
