@@ -214,10 +214,10 @@ class DashboardController extends Controller
     {
         $participants = Participant::latest()->paginate(10);
         
-        $totalPaidAmount = Participant::where('payment_status', 'paid')
+        $totalPaidAmount = Payment::where('status', 'paid')
         ->sum('amount');
 
-        $totalPaidCount = Participant::where('payment_status', 'paid')
+        $totalPaidCount = Payment::where('status', 'paid')
             ->count();
 
         return view('dashboard.sections.epd_participants', compact('participants', 'totalPaidAmount', 'totalPaidCount'));
