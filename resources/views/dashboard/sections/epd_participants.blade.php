@@ -195,7 +195,7 @@
 
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        @foreach($allStatuses as $status)
+                                        @foreach($productStatuses as $status)
                                         <span class="badge bg-{{ $statusColors[$status] ?? 'secondary' }}">
                                             {{ ucfirst($status) }}
                                         </span>
