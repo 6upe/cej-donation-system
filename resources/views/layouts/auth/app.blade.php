@@ -17,7 +17,19 @@
     </div>
 
     @include('dashboard.partials.scripts')
+<x-loader />
 
+<script>
+function showLoader(message = "Processing...") {
+    const loader = document.getElementById('globalLoader');
+    loader.classList.remove('d-none');
+    loader.querySelector('p').innerText = message;
+}
+
+function hideLoader() {
+    document.getElementById('globalLoader').classList.add('d-none');
+}
+</script>
 </body>
 
 </html>

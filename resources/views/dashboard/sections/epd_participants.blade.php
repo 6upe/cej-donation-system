@@ -272,6 +272,9 @@ document.querySelector('input[name="search"]').addEventListener('keyup', functio
 });
 
 function resendTicket(participantId, ticketCode) {
+
+ showLoader("Resending ticket - " + ticketCode);
+
     fetch('/dashboard/resend-ticket', {
             method: 'POST',
             headers: {
@@ -285,6 +288,7 @@ function resendTicket(participantId, ticketCode) {
         })
         .then(res => res.json())
         .then(data => {
+            hideLoader();
 
             console.log("Resend Ticket Response:", data);
 
