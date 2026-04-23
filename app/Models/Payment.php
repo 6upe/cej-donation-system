@@ -27,7 +27,6 @@ class Payment extends Model
     protected $casts = [
         'raw_response' => 'array',
         'paid_at' => 'datetime',
-        'product_status' => 'array',
     ];
 
     // Relationship

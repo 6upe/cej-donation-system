@@ -38,10 +38,13 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
     Route::get('/reports', [DashboardController::class, 'reports'])->name('dashboard.reports');
     Route::get('/help', [DashboardController::class, 'help'])->name('dashboard.help');
 
+    Route::get('/payments', [DashboardController::class, 'payments'])->name('dashboard.epdPayments');
+
 
     Route::get('/epd-participants', [DashboardController::class, 'epdParticipants'])->name('dashboard.epdParticipants');
     Route::get('/epd-participants/search', [DashboardController::class, 'search'])->name('dashboard.epdParticipants.search');
     Route::post('/epd-participants/update-status', [DashboardController::class, 'updateStatusAjax'])->name('dashboard.epdParticipants.updateStatus');
+    Route::post('/epd-participants/clear-status', [DashboardController::class, 'clearStatusAjax'])->name('dashboard.epdParticipants.clearStatus');
     Route::post('/resend-ticket', [PaymentController::class, 'resendTicket']);
 
     

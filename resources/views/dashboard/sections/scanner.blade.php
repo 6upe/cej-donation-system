@@ -29,6 +29,15 @@
         <div class="card">
             <div class="card-body p-4">
 
+            <div class="mt-3 mb-3">
+                <input type="text" id="manualTicket" class="form-control mb-2"
+                    placeholder="Enter or scan ticket code manually">
+
+                <button class="btn btn-dark w-100" onclick="searchByTicket()">
+                    Search Participant
+                </button>
+            </div>
+
                 <h5 class="card-title fw-semibold mb-4">QR Code Scanner</h5>
                 <p class="text-warning">Point the camera at the QR code on the participant's ticket to view their details and update their status. </p>
 
@@ -73,7 +82,6 @@ function onScanSuccess(decodedText) {
     fetchParticipant(ticket_code);
 }
 
-// Fetch participant details
 function fetchParticipant(id) {
     fetch(`/api/epd-participants/${id}`, {
         headers: {
@@ -81,74 +89,124 @@ function fetchParticipant(id) {
             'Content-Type': 'application/json'
         }
     })
-        .then(res => res.json())
-        .then(data => {
-            if(data.data) {
+    .then(res => res.json())
+    .then(data => {
 
-            console.log("Participant Data:", data.data);
-            let currentStatuses = data.data.product_status || [];
+        if (!data.data) {
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').innerHTML = `
+                <div class="alert alert-danger">
+                    Participant not found for ticket code: ${ticket_code}
+                </div>
+            `;
+            return;
+        }
 
+        console.log("Participant Data:", data.data);
+
+        let statuses = data.data.product_status;
+
+        // If it's a string (most likely case in your system)
+        if (typeof statuses === 'string') {
+            try {
+                statuses = JSON.parse(statuses);
+            } catch (e) {
+                statuses = [statuses]; // fallback
+            }
+        }
+
+        // If it's null/undefined
+        if (!Array.isArray(statuses)) {
+            statuses = [];
+        }
+
+        const statusBadges = statuses.length
+            ? statuses.map(status => {
+                const colors = {
+                    initial: 'secondary',
+                    registered: 'info',
+                    attended: 'success',
+                    collected: 'primary',
+                    cancelled: 'danger',
+                    paid: 'success'
+                };
+
+                return `
+                    <span class="badge bg-${colors[status] || 'secondary'} me-1 mb-1">
+                        ${status.charAt(0).toUpperCase() + status.slice(1)}
+                    </span>
+                `;
+            }).join('')
+            : `<span class="badge bg-light text-dark">No status</span>`;
+
+        participant_id = data.data.id;
+
+        // 1. FIRST render UI
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('result').innerHTML = `
+            <div class="card p-3">
+                <div class="alert alert-success">
+                    <h5 class="mb-1">Participant: ${data.data.name}</h5>
+                    <small>Ticket: ${data.data.ticket_code}</small>
+                </div>
+
+                <p><strong>Name:</strong> ${data.data.name}</p>
+                <p><strong>Email:</strong> ${data.data.email}</p>
+                <p><strong>Package:</strong> ${data.data.ticket_package}</p>
+
+                <p>
+                    <strong>Status:</strong><br>
+                    <div class="mb-2">${statusBadges}</div>
+
+                    <button onclick="clearStatus()" class="btn btn-sm btn-outline-danger">
+                        <i class="ti ti-trash"></i> Clear Status
+                    </button>
+                </p>
+
+                <div class="mb-3">
+                    <label class="fw-bold mb-2">Select Status:</label>
+
+                    <div id="statusOptions" class="d-flex flex-wrap gap-2">
+
+                        <label class="status-option">
+                            <input type="checkbox" value="paid"> Paid
+                        </label>
+
+                        <label class="status-option">
+                            <input type="checkbox" value="registered"> Registered
+                        </label>
+
+                        <label class="status-option">
+                            <input type="checkbox" value="attended"> Attended
+                        </label>
+
+                        <label class="status-option">
+                            <input type="checkbox" value="collected"> Collected
+                        </label>
+
+                        <label class="status-option">
+                            <input type="checkbox" value="cancelled"> Cancelled
+                        </label>
+
+                    </div>
+                </div>
+
+                <button onclick="updateStatus()" class="btn btn-success">
+                    Update Status
+                </button>
+            </div>
+        `;
+
+        // 2. THEN apply checkbox state (IMPORTANT FIX)
+        setTimeout(() => {
             document.querySelectorAll('#statusOptions input').forEach(cb => {
-                if (currentStatuses.includes(cb.value)) {
+                if (statuses.includes(cb.value)) {
                     cb.checked = true;
                     cb.parentElement.classList.add('active');
                 }
             });
-                
-                participant_id = data.data.id;
-                document.getElementById('result').style.display = 'block';
-                document.getElementById('result').innerHTML = `
-                    <div class="card p-3">
-                        <div class="alert alert-success">
-                            <h5 class="card-title mb-3"> Participant found: ${data.data.name}</h5>
-                            <h5 class="card-title mb-3"> Ticket Code: ${data.data.ticket_code}</h5>
-                        </div>
-                        <p><strong>Name:</strong> ${data.data.name}</p>
-                        <p><strong>Email:</strong> ${data.data.email}</p>
-                        <p><strong>Package:</strong> ${data.data.ticket_package}</p>
-                        <p><strong>Status:</strong> ${data.data.product_status}</p>
-
-                        <div class="mb-3">
-                            <label class="fw-bold mb-2">Select Status:</label>
-
-                            <div id="statusOptions" class="d-flex flex-wrap gap-2">
-                                <label class="status-option">
-                                    <input type="checkbox" value="registered"> Registered
-                                </label>
-
-                                <label class="status-option">
-                                    <input type="checkbox" value="attended"> Attended
-                                </label>
-
-                                <label class="status-option">
-                                    <input type="checkbox" value="collected"> Collected
-                                </label>
-
-                                <label class="status-option">
-                                    <input type="checkbox" value="cancelled"> Cancelled
-                                </label>
-                            </div>
-                        </div>
-
-                        <button onclick="updateStatus()" class="btn btn-success">
-                            Update Status
-                        </button>
-                    </div>
-                `;
-
-                return;
-            } else {
-                document.getElementById('result').style.display = 'block';
-                document.getElementById('result').innerHTML = `
-                    <div class="alert alert-danger">
-                        Participant not found for ticket code: ${ticket_code}
-                    </div>
-                `;
-                return;
-            }
-
-            
-        });
+        }, 50);
+    });
 }
 
 // Update status
@@ -183,6 +241,57 @@ function updateStatus() {
         }
         
     });
+}
+
+function clearStatus() {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "This will remove all statuses",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, clear it!"
+    }).then((result) => {
+
+        if (!result.isConfirmed) return;
+
+        fetch('/dashboard/epd-participants/clear-status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                participant_id: participant_id
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            console.log("Clear Response:", data);
+
+            if (data.status === 'success') {
+                Swal.fire("Cleared", "Status reset successfully!", "success");
+                fetchParticipant(ticket_code); // refresh UI
+            } else {
+                Swal.fire("Error", "Failed to clear status", "error");
+            }
+
+        });
+
+    });
+}
+
+function searchByTicket() {
+    const code = document.getElementById('manualTicket').value;
+
+    if (!code) {
+        Swal.fire("Error", "Please enter a ticket code", "error");
+        return;
+    }
+
+    ticket_code = code;
+    fetchParticipant(code);
 }
 
 let html5QrCode = new Html5Qrcode("reader");

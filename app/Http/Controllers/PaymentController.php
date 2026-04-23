@@ -135,8 +135,18 @@ class PaymentController extends Controller
                     'referral' => $request->referral,
                     'transaction_token' => (string)$body->TransToken,
                     'payment_status' => 'pending',
-                    'product_status' => json_encode(['initial']),
+                    'product_status' => ['initial'],
                     'ticket_code' => 'Not Generated'
+                ]);
+
+                Payment::create([
+                    'participant_id' => $participant->id,
+                    'transaction_token' => (string)$body->TransToken,
+                    'transaction_ref' => $companyRef,
+                    'amount' => $request->amount,
+                    'currency' => $request->currency,
+                    'status' => 'pending',
+                    'raw_response' => json_decode(json_encode($body), true),
                 ]);
 
                 return response()->json([
@@ -181,15 +191,26 @@ class PaymentController extends Controller
         $mobileNumber = $request->mobileNumber;
         $MNO = $request->MNO;
         $country = $request->country;
+
+        $payment = Payment::where('transaction_token', $token)->first();
     
-            log::info('Charge Token Request', [
-                'token' => $token,
-                'method' => $method,
-                'mobile_number' => $mobileNumber
-            ]);
+        log::info('Charge Token Request', [
+            'token' => $token,
+            'method' => $method,
+            'mobile_number' => $mobileNumber
+        ]);
 
         // CARD PAYMENT → Redirect to DPO Hosted Page
         if ($method === 'card') {
+
+             if ($payment) {
+                $payment->update([
+                    'payment_method' => 'card',
+                    'status' => 'pending'
+                ]);
+            }
+
+
             return response()->json([
                 'status' => 'redirect',
                 'payment_url' => "https://secure.3gdirectpay.com/payv2.php?ID={$token}"
@@ -246,6 +267,15 @@ class PaymentController extends Controller
                 $statusCode = (string) ($body->StatusCode ?? $body->Result ?? null);
                 $message = (string) ($body->ResultExplanation ?? 'No message');
                 $instructions = html_entity_decode((string) ($body->instructions ?? ''));
+
+                $payment->update([
+                    'payment_method' => 'mobile',
+                    'mno' => $MNO,
+                    'mno_country' => $country,
+                    'status' => $statusCode == '130' ? 'pending' : 'failed',
+                    'response_message' => $message,
+                    'raw_response' => json_decode(json_encode($body), true),
+                ]);
 
                 // Log parsed response
                 Log::info('Parsed DPO Response', [
@@ -325,6 +355,7 @@ class PaymentController extends Controller
             ]);
 
             $body = simplexml_load_string($response->body());
+            $payment = Payment::where('transaction_token', $request->token)->first();
 
             // Log full response for debugging
             Log::info('DPO Verify Response', [
@@ -337,6 +368,8 @@ class PaymentController extends Controller
             if (isset($body->Result) && $body->Result == "000") {
                
                 $participant = Participant::where('transaction_token', $request->token)->first();
+
+                
 
                  if (!$participant) {
                     return response()->json([
@@ -393,6 +426,15 @@ class PaymentController extends Controller
                     }
                 }
 
+                if ($payment) {
+                    $payment->update([
+                        'status' => 'paid',
+                        'response_message' => 'Payment successful',
+                        'paid_at' => now(),
+                        'raw_response' => json_decode(json_encode($body), true),
+                    ]);
+                }
+
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Payment successful'
@@ -400,6 +442,14 @@ class PaymentController extends Controller
             }
 
 
+
+            if ($payment) {
+                $payment->update([
+                    'status' => 'pending',
+                    'response_message' => (string) ($body->ResultExplanation ?? 'Pending'),
+                    'raw_response' => json_decode(json_encode($body), true),
+                ]);
+            }
 
             // You can improve this with more status checks
             return response()->json([
@@ -515,22 +565,36 @@ class PaymentController extends Controller
         return view('epd.ticket', compact('participant'));
     }
 
-    public function updateStatus(Request $request, $code)
-    {
-        $participant = Participant::where('ticket_code', $code)->firstOrFail();
+ public function updateStatus(Request $request, $code)
+{
+    $participant = Participant::where('ticket_code', $code)->firstOrFail();
 
-        $request->validate([
-            'status' => 'required|in:registered,attended,collected,cancelled'
-        ]);
+    $request->validate([
+        'status' => 'required|array'
+    ]);
 
-        $participant->status = $request->status;
-        $participant->save();
+    $existing = $participant->product_status ?? [];
 
-        return back()->with('success', 'Status updated successfully');
+    if (is_string($existing)) {
+        $existing = json_decode($existing, true) ?? [$existing];
     }
+
+    $merged = array_unique(array_merge($existing, $request->status));
+
+    $participant->product_status = $merged;
+    $participant->save();
+
+    return back()->with('success', 'Status updated successfully');
+}
 
     private function generateAndSendTicket(Participant $participant)
 {
+
+    Log::info('Generating and sending ticket', [
+        'participant_id' => $participant->id,
+        'email' => $participant->email
+    ]);
+
     try {
         // Ensure ticket_code exists
         if (!$participant->ticket_code || $participant->ticket_code === 'Not Generated') {
@@ -583,6 +647,11 @@ public function resendTicket(Request $request)
         'ticket_code' => 'required|string'
     ]);
 
+    Log::info('Resend Ticket Request', [
+        'participant_id' => $request->participant_id,
+        'ticket_code' => $request->ticket_code
+    ]);
+
     $participant = Participant::where('id', $request->participant_id)
         ->where('ticket_code', $request->ticket_code)
         ->first();
@@ -595,6 +664,12 @@ public function resendTicket(Request $request)
     }
 
     $sent = $this->generateAndSendTicket($participant);
+
+    Log::info('Resend Ticket Result', [
+        'participant_id' => $participant->id,
+        'email' => $participant->email,
+        'sent' => $sent
+    ]);
 
     return response()->json([
         'status' => $sent ? 'success' : 'error',

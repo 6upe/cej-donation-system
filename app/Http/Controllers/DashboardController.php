@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Donation;
 use App\Models\Donor;
 use App\Models\Participant;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Log;
 
 
@@ -95,6 +96,7 @@ class DashboardController extends Controller
             'userFirstName' => $userFirstName
         ]);
     }
+
 
 
 
@@ -198,12 +200,27 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function payments()
+    {
+        $payments = \App\Models\Payment::with('participant')
+            ->latest()
+            ->paginate(15);
+
+        return view('dashboard.epd-payments.index', compact('payments'));
+    }
+
 
     public function epdParticipants()
     {
         $participants = Participant::latest()->paginate(10);
+        
+        $totalPaidAmount = Participant::where('payment_status', 'paid')
+        ->sum('amount');
 
-        return view('dashboard.sections.epd_participants', compact('participants'));
+        $totalPaidCount = Participant::where('payment_status', 'paid')
+            ->count();
+
+        return view('dashboard.sections.epd_participants', compact('participants', 'totalPaidAmount', 'totalPaidCount'));
     }
 
 public function updateStatusAjax(Request $request)
@@ -211,35 +228,61 @@ public function updateStatusAjax(Request $request)
     $request->validate([
         'participant_id' => 'required|exists:participants,id',
         'status' => 'required|array',
-        
-    ]);
-
-    Log::info('Updating participant status', [
-        'participant_id' => $request->participant_id,
-        'status' => $request->status
     ]);
 
     $participant = Participant::findOrFail($request->participant_id);
 
-    // Ensure current status is an array
-    $current = $participant->product_status ?? [];
+    // Get current statuses safely
+    $existing = $participant->product_status ?? [];
 
-    if (is_string($current)) {
-        $current = [$current]; // safety fix for old data
+    // Fix corrupted data
+    if (is_string($existing)) {
+        $decoded = json_decode($existing, true);
+        $existing = is_array($decoded) ? $decoded : [$existing];
     }
 
-    // Merge + remove duplicates
-    $updated = array_unique(array_merge($current, $request->status));
+    // Flatten in case of nested arrays
+    $existing = collect($existing)
+        ->flatten()
+        ->map(fn($s) => is_string($s) ? trim($s) : $s)
+        ->toArray();
 
-    $participant->product_status = $updated;
+    // Merge new statuses
+    $newStatuses = $request->status;
+
+    $merged = array_unique(array_merge($existing, $newStatuses));
+
+    // Save clean array
+    $participant->product_status = array_values($merged);
     $participant->save();
 
     return response()->json([
         'status' => 'success',
-        'message' => 'Status updated successfully',
         'data' => $participant->product_status
     ]);
 }
+public function clearStatusAjax(Request $request)
+{
+    $request->validate([
+        'participant_id' => 'required|exists:participants,id',
+    ]);
+
+    $participant = Participant::findOrFail($request->participant_id);
+
+    // Reset to empty array OR default state
+    $participant->product_status = []; 
+    // OR if you prefer default:
+    // $participant->product_status = ['initial'];
+
+    $participant->save();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Status cleared successfully',
+        'data' => $participant->product_status
+    ]);
+}
+
 
 
     public function search(Request $request)
@@ -271,5 +314,8 @@ public function updateStatusAjax(Request $request)
 
     return view('dashboard.sections.epd_participants', compact('participants'));
 }
+
+
+
 
 }

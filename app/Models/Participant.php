@@ -28,4 +28,8 @@ class Participant extends Model
         'product_status',
         'ticket_code'
     ];
+
+    protected $casts = [
+        'product_status' => 'array',
+    ];
 }

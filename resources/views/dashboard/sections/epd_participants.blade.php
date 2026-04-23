@@ -13,7 +13,45 @@
 
                 <div class="row mb-4">
 
-                <div class="col-lg-2">
+                    <!-- TOTAL REVENUE -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body d-flex flex-column">
+                                <div>
+                                    <h6 class="text-muted mb-2">Total Revenue</h6>
+                                    <h3 class="fw-bold text-success">
+                                        ZMW {{ number_format($totalPaidAmount, 2) }}
+                                    </h3>
+                                    <small class="text-muted">From paid participants</small>
+                                </div>
+
+                                <div class="mt-auto text-end">
+                                    <a href="{{ route('dashboard.epdPayments') }}" class="btn btn-outline-primary">
+                                        View Payments
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TOTAL PAID PARTICIPANTS -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body">
+                                <h6 class="text-muted mb-2">Paid Participants</h6>
+                                <h3 class="fw-bold text-primary">
+                                    {{ $totalPaidCount }}
+                                </h3>
+                                <small class="text-muted">Completed payments</small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mb-4">
+
+                    <div class="col-lg-5">
                         <div class="card p-3">
                             <a href="{{ route('dashboard.scanner') }}" class="btn btn-outline-success m-1">
                                 <i class="ti ti-qrcode"></i> Scan QR Code
@@ -28,12 +66,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-3">
-                        <div class="card p-3">
-                            <h6>Paid</h6>
-                            <h4>{{ \App\Models\Participant::where('payment_status','paid')->count() }}</h4>
-                        </div>
-                    </div>
+                    
 
                     <div class="col-lg-3">
                         <div class="card p-3">
@@ -42,57 +75,56 @@
                         </div>
                     </div>
 
-                    
+
                 </div>
 
 
 
                 <div class="table-responsive">
-<form method="GET" action="{{ route('dashboard.epdParticipants.search') }}">
-    <div class="row mb-3">
+                    <form method="GET" action="{{ route('dashboard.epdParticipants.search') }}">
+                        <div class="row mb-3">
 
-        <!-- SEARCH INPUT -->
-        <div class="col-md-4 mb-1 mt-1">
-            <input 
-                type="text" 
-                name="search" 
-                class="form-control" 
-                placeholder="Search name, email, ticket code..."
-                value="{{ request('search') }}">
-        </div>
+                            <!-- SEARCH INPUT -->
+                            <div class="col-md-4 mb-1 mt-1">
+                                <input type="text" name="search" class="form-control"
+                                    placeholder="Search name, email, ticket code..." value="{{ request('search') }}">
+                            </div>
 
 
 
-        <!-- FILTER: PAYMENT STATUS -->
-        <div class="col-md-3 mb-1 mt-1">
-            <select name="payment_status" class="form-select">
-                <option value="">All Status</option>
-                <option value="paid" {{ request('payment_status')=='paid' ? 'selected' : '' }}>Paid</option>
-                <option value="pending" {{ request('payment_status')=='pending' ? 'selected' : '' }}>Pending</option>
-                <option value="failed" {{ request('payment_status')=='failed' ? 'selected' : '' }}>Failed</option>
-            </select>
-        </div>
+                            <!-- FILTER: PAYMENT STATUS -->
+                            <div class="col-md-3 mb-1 mt-1">
+                                <select name="payment_status" class="form-select">
+                                    <option value="">All Status</option>
+                                    <option value="paid" {{ request('payment_status')=='paid' ? 'selected' : '' }}>Paid
+                                    </option>
+                                    <option value="pending"
+                                        {{ request('payment_status')=='pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="failed" {{ request('payment_status')=='failed' ? 'selected' : '' }}>
+                                        Failed</option>
+                                </select>
+                            </div>
 
-        <!-- FILTER: PACKAGE -->
-        <div class="col-md-3 mb-1 mt-1">
-            <select name="package" class="form-select">
-                <option value="">All Packages</option>
-                <option value="standard">Standard</option>
-                <option value="vip">VIP</option>
-            </select>
-        </div>
+                            <!-- FILTER: PACKAGE -->
+                            <div class="col-md-3 mb-1 mt-1">
+                                <select name="package" class="form-select">
+                                    <option value="">All Packages</option>
+                                    <option value="standard">Standard</option>
+                                    <option value="vip">VIP</option>
+                                </select>
+                            </div>
 
-        <!-- SUBMIT -->
-        <div class="col-md-2 mb-1 mt-1">
-            <button class="btn btn-primary w-100">Search</button>
-        </div>
+                            <!-- SUBMIT -->
+                            <div class="col-md-2 mb-1 mt-1">
+                                <button class="btn btn-primary w-100">Search</button>
+                            </div>
 
-        <!-- <button onclick="verifyAllPayments()" class="btn btn-warning">
+                            <!-- <button onclick="verifyAllPayments()" class="btn btn-warning">
             🔄 Sync Payments
         </button> -->
 
-    </div>
-</form>
+                        </div>
+                    </form>
 
                     <table class="table text-nowrap mb-0 align-middle">
 
@@ -110,89 +142,96 @@
 
                         <tbody>
                             @foreach ($participants as $participant)
-                            <tr>
-                                <td>
-                                    <h6 class="fw-semibold mb-0">{{ $participant->id }}</h6>
+                            <tr class="align-middle">
+
+                                <!-- ID -->
+                                <td class="text-muted fw-semibold">
+                                    #{{ $participant->id }}
                                 </td>
 
                                 <!-- NAME + EMAIL -->
                                 <td>
-                                    <h6 class="fw-semibold mb-1">{{ $participant->name }}</h6>
-                                    <span class="fw-normal">{{ $participant->email }}</span>
+                                    <div class="fw-semibold">{{ $participant->name }}</div>
+                                    <small class="text-muted">{{ $participant->email }}</small>
                                 </td>
 
                                 <!-- PACKAGE -->
                                 <td>
-                                    <span class="badge bg-light-primary text-primary">
+                                    <span class="badge bg-light text-primary border">
                                         {{ $participant->ticket_package }}
                                     </span>
                                 </td>
 
                                 <!-- AMOUNT -->
-                                <td>
-                                    <h6 class="fw-semibold mb-0">
-                                        {{ $participant->currency }}
-                                        {{ number_format($participant->amount, 2) }}
-                                    </h6>
+                                <td class="fw-semibold">
+                                    {{ $participant->currency }} {{ number_format($participant->amount, 2) }}
                                 </td>
 
+                                <!-- STATUS -->
                                 @php
-                                    $statusColors = [
-                                        'initial' => 'secondary',
-                                        'registered' => 'info',
-                                        'attended' => 'success',
-                                        'collected' => 'primary',
-                                        'cancelled' => 'danger',
-                                        'paid' => 'success',
-                                        'pending' => 'warning text-dark',
-                                        'failed' => 'danger'
-                                    ];
+                                $statusColors = [
+                                'initial' => 'secondary',
+                                'registered' => 'info',
+                                'attended' => 'success',
+                                'collected' => 'primary',
+                                'cancelled' => 'danger',
+                                'paid' => 'success',
+                                'pending' => 'warning text-dark',
+                                'failed' => 'danger'
+                                ];
 
-                                    // Ensure product_status is always an array
-                                    $productStatuses = $participant->product_status ?? [];
+                                $productStatuses = $participant->product_status ?? [];
 
-                                    if (is_string($productStatuses)) {
-                                        $productStatuses = [$productStatuses];
-                                    }
+                                if (is_string($productStatuses)) {
+                                $decoded = json_decode($productStatuses, true);
+                                $productStatuses = is_array($decoded) ? $decoded : [$productStatuses];
+                                }
 
-                                    // Combine payment_status + product_status
-                                    $allStatuses = array_unique(array_merge(
-                                        [$participant->payment_status],
-                                        $productStatuses
-                                    ));
+                                $allStatuses = array_unique(array_merge(
+                                [$participant->payment_status],
+                                $productStatuses
+                                ));
                                 @endphp
 
                                 <td>
-                                    @foreach($allStatuses as $status)
-                                        <span class="badge bg-{{ $statusColors[$status] ?? 'secondary' }} me-1">
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach($allStatuses as $status)
+                                        <span class="badge bg-{{ $statusColors[$status] ?? 'secondary' }}">
                                             {{ ucfirst($status) }}
                                         </span>
-                                    @endforeach
+                                        @endforeach
+                                    </div>
                                 </td>
 
                                 <!-- DATE -->
-                                <td>
-                                    <p class="mb-0 fw-normal">
-                                        {{ $participant->created_at->format('M d, Y') }}
-                                    </p>
+                                <td class="text-muted">
+                                    {{ $participant->created_at->format('M d, Y') }}
                                 </td>
 
-                                
-                            <!-- TICKET CODE -->
-                                <td class="flex justify-center align-content-center">
-                                    <p class="mb-0 fw-normal">
-                                        {{ $participant->ticket_code }}
-                                    </p>
-                                    <a target="_blank()" href="{{ route('ticket.show', $participant->ticket_code) }}" class="btn btn-sm w-100 btn-primary">
-                                        View Ticket
-                                    </a>
+                                <!-- TICKET + ACTIONS -->
+                                <td style="min-width: 220px;">
 
-                                    <button onclick="resendTicket({{ $participant->id }}, '{{ $participant->ticket_code }}')" 
-                                            class="btn btn-sm btn-primary">
-                                        Resend Ticket
-                                    </button>
+                                    <div class="mb-1 text-truncate">
+                                        <small class="text-muted">Code:</small><br>
+                                        <span class="fw-semibold">{{ $participant->ticket_code }}</span>
+                                    </div>
+
+                                    <div class="d-flex flex-column gap-1">
+
+                                        <a target="_blank" href="{{ route('ticket.show', $participant->ticket_code) }}"
+                                            class="btn btn-sm btn-outline-primary w-100">
+                                            View Ticket
+                                        </a>
+
+                                        <button
+                                            onclick="resendTicket({{ $participant->id }}, '{{ $participant->ticket_code }}')"
+                                            class="btn btn-sm btn-outline-success w-100">
+                                            Resend Ticket
+                                        </button>
+
+                                    </div>
+
                                 </td>
-
 
                             </tr>
                             @endforeach
@@ -215,7 +254,7 @@
 <script>
 let timer;
 
-document.querySelector('input[name="search"]').addEventListener('keyup', function () {
+document.querySelector('input[name="search"]').addEventListener('keyup', function() {
     clearTimeout(timer);
 
     timer = setTimeout(() => {
@@ -225,24 +264,27 @@ document.querySelector('input[name="search"]').addEventListener('keyup', functio
 
 function resendTicket(participantId, ticketCode) {
     fetch('/dashboard/resend-ticket', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            participant_id: participantId,
-            ticket_code: ticketCode
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                participant_id: participantId,
+                ticket_code: ticketCode
+            })
         })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'success') {
-            Swal.fire("Success", data.message, "success");
-        } else {
-            Swal.fire("Error", data.message, "error");
-        }
-    });
+        .then(res => res.json())
+        .then(data => {
+
+            console.log("Resend Ticket Response:", data);
+
+            if (data.status === 'success') {
+                Swal.fire("Success", data.message, "success");
+            } else {
+                Swal.fire("Error", data.message, "error");
+            }
+        });
 }
 
 // function verifyAllPayments() {

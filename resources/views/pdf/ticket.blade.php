@@ -136,6 +136,16 @@
 
     <div class="title">Payment Receipt & Ticket</div>
 
+     @php
+        $statuses = $participant->product_status ?? [];
+
+        // Ensure it's always an array
+        if (is_string($statuses)) {
+            $decoded = json_decode($statuses, true);
+            $statuses = is_array($decoded) ? $decoded : [$statuses];
+        }
+    @endphp
+
     <!-- RECEIPT DETAILS -->
     <div class="section">
         <table>
@@ -143,14 +153,17 @@
                 <td class="label">Ticket Code:</td>
                 <td class="value">{{ $participant->ticket_code }}</td>
                 <td class="label">Ticket status:</td>
-                <td class="value">{{ $participant->product_status }}</td>
+                <td class="value">
+                    {{ implode(', ', $statuses) }}
+                </td>
             </tr>
             <tr>
                 <td class="label">Date:</td>
                 <td class="value">{{ date('d M Y') }}{{ date(' H:i:s') }}</td>
                 <td class="label">Payment Status:</td>
                 <td class="value">
-                    @foreach($participant->product_status ?? [] as $status)
+
+                    @foreach($statuses as $status)
                         <span style="padding:4px 8px; margin-right:5px; background:#e3f2fd; border-radius:4px;">
                             {{ ucfirst($status) }}
                         </span>
