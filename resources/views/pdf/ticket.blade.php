@@ -226,7 +226,7 @@
                             </tr>
                             <tr>
                                 <td class="label">Payment Method:</td>
-                                <td class="value">Mobile / Card</td>
+                                <td class="value">{{ $payment->method ?? 'N/A' }}</td>
                             </tr>
                         </table>
                     </div>
