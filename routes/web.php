@@ -42,6 +42,8 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
     Route::get('/epd-participants', [DashboardController::class, 'epdParticipants'])->name('dashboard.epdParticipants');
     Route::get('/epd-participants/search', [DashboardController::class, 'search'])->name('dashboard.epdParticipants.search');
     Route::post('/epd-participants/update-status', [DashboardController::class, 'updateStatusAjax'])->name('dashboard.epdParticipants.updateStatus');
+    Route::post('/resend-ticket', [PaymentController::class, 'resendTicket']);
+
     
     
     Route::get('/epd-participants/scanner', function () {
@@ -69,7 +71,6 @@ Route::prefix('donate')->group(function () {
 });
 
 Route::get('/ticket/{code}', [PaymentController::class, 'show'])->name('ticket.show');
-// Route::post('/resend-ticket', [PaymentController::class, 'resendTicket']);
 // Route::post('/ticket/{code}/update-status', [PaymentController::class, 'updateStatus']);
 
 Route::get('/test', function () {
