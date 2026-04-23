@@ -186,6 +186,11 @@
                                     <a target="_blank()" href="{{ route('ticket.show', $participant->ticket_code) }}" class="btn btn-sm w-100 btn-primary">
                                         View Ticket
                                     </a>
+
+                                    <button onclick="resendTicket({{ $participant->id }}, '{{ $participant->ticket_code }}')" 
+                                            class="btn btn-sm btn-primary">
+                                        Resend Ticket
+                                    </button>
                                 </td>
 
 
@@ -217,6 +222,28 @@ document.querySelector('input[name="search"]').addEventListener('keyup', functio
         this.form.submit();
     }, 1500); // delay to avoid too many requests
 });
+
+function resendTicket(participantId, ticketCode) {
+    fetch('/resend-ticket', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            participant_id: participantId,
+            ticket_code: ticketCode
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            Swal.fire("Success", data.message, "success");
+        } else {
+            Swal.fire("Error", data.message, "error");
+        }
+    });
+}
 
 // function verifyAllPayments() {
 //     Swal.fire({

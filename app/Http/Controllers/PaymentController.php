@@ -529,6 +529,78 @@ class PaymentController extends Controller
         return back()->with('success', 'Status updated successfully');
     }
 
+    private function generateAndSendTicket(Participant $participant)
+{
+    try {
+        // Ensure ticket_code exists
+        if (!$participant->ticket_code || $participant->ticket_code === 'Not Generated') {
+            $participant->ticket_code = 'EPD2026-' . strtoupper(Str::random(10));
+            $participant->save();
+        }
+
+        // Generate QR
+        $qrData = url('/ticket/' . $participant->ticket_code);
+        $qrSvg = QrCode::size(200)->format('svg')->generate($qrData);
+
+        $tempPath = storage_path('app/public/qr_temp_' . $participant->id . '.svg');
+        file_put_contents($tempPath, $qrSvg);
+
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf.ticket', [
+            'participant' => $participant,
+            'qrPath' => $tempPath
+        ]);
+
+        // Send email
+        Mail::to($participant->email)->send(
+            new TicketMail($participant, $pdf->output())
+        );
+
+        // Clean up
+        @unlink($tempPath);
+
+        Log::info('Ticket regenerated and sent', [
+            'participant_id' => $participant->id,
+            'email' => $participant->email
+        ]);
+
+        return true;
+
+    } catch (\Exception $e) {
+        Log::error('Ticket resend failed', [
+            'participant_id' => $participant->id,
+            'error' => $e->getMessage()
+        ]);
+
+        return false;
+    }
+}
+
+public function resendTicket(Request $request)
+{
+    $request->validate([
+        'participant_id' => 'required|exists:participants,id',
+        'ticket_code' => 'required|string'
+    ]);
+
+    $participant = Participant::where('id', $request->participant_id)
+        ->where('ticket_code', $request->ticket_code)
+        ->first();
+
+    if (!$participant) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Participant not found or ticket mismatch'
+        ], 404);
+    }
+
+    $sent = $this->generateAndSendTicket($participant);
+
+    return response()->json([
+        'status' => $sent ? 'success' : 'error',
+        'message' => $sent ? 'Ticket resent successfully' : 'Failed to resend ticket'
+    ]);
+}
 
 
     

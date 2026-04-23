@@ -17,6 +17,7 @@ Route::post('/verify-token', [PaymentController::class, 'verifyToken']);
 Route::post('/verify-all-payments', [PaymentController::class, 'verifyAllPayments']);
 
 Route::get('/epd-participants/{ticket_code}', [PaymentController::class, 'getByTicketCode']);
+Route::post('/resend-ticket', [PaymentController::class, 'resendTicket']);
 
 
 Route::post('/test-payment-success', [PaymentController::class, 'testPaymentSuccess']);
