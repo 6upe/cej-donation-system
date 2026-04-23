@@ -224,7 +224,7 @@ document.querySelector('input[name="search"]').addEventListener('keyup', functio
 });
 
 function resendTicket(participantId, ticketCode) {
-    fetch('/resend-ticket', {
+    fetch('/dashboard/resend-ticket', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
