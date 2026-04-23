@@ -66,7 +66,7 @@
                         </div>
                     </div>
 
-                    
+
 
                     <div class="col-lg-3">
                         <div class="card p-3">
@@ -212,22 +212,31 @@
                                 <td style="min-width: 220px;">
 
                                     <div class="mb-1 text-truncate">
-                                        <small class="text-muted">Code:</small><br>
                                         <span class="fw-semibold">{{ $participant->ticket_code }}</span>
                                     </div>
 
                                     <div class="d-flex flex-column gap-1">
 
-                                        <a target="_blank" href="{{ route('ticket.show', $participant->ticket_code) }}"
-                                            class="btn btn-sm btn-outline-primary w-100">
-                                            View Ticket
-                                        </a>
+                                        <div class="row">
 
-                                        <button
-                                            onclick="resendTicket({{ $participant->id }}, '{{ $participant->ticket_code }}')"
-                                            class="btn btn-sm btn-outline-success w-100">
-                                            Resend Ticket
-                                        </button>
+                                            <div class="col-6">
+                                                <a target="_blank"
+                                                    href="{{ route('ticket.show', $participant->ticket_code) }}"
+                                                    class="btn btn-sm btn-outline-primary w-100">
+                                                    View <i class="ti ti-eye"></i>
+                                                </a>
+                                            </div>
+                                            <div class="col-6">
+                                                <button
+                                                    onclick="resendTicket({{ $participant->id }}, '{{ $participant->ticket_code }}')"
+                                                    class="btn btn-sm btn-outline-success w-100 col-6">
+                                                    Re-send <i class="ti ti-send"></i>
+                                                </button>
+                                            </div>
+
+
+                                        </div>
+
 
                                     </div>
 
