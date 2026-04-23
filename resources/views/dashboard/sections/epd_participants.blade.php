@@ -136,15 +136,38 @@
                                     </h6>
                                 </td>
 
-                                <!-- STATUS -->
+                                @php
+                                    $statusColors = [
+                                        'initial' => 'secondary',
+                                        'registered' => 'info',
+                                        'attended' => 'success',
+                                        'collected' => 'primary',
+                                        'cancelled' => 'danger',
+                                        'paid' => 'success',
+                                        'pending' => 'warning text-dark',
+                                        'failed' => 'danger'
+                                    ];
+
+                                    // Ensure product_status is always an array
+                                    $productStatuses = $participant->product_status ?? [];
+
+                                    if (is_string($productStatuses)) {
+                                        $productStatuses = [$productStatuses];
+                                    }
+
+                                    // Combine payment_status + product_status
+                                    $allStatuses = array_unique(array_merge(
+                                        [$participant->payment_status],
+                                        $productStatuses
+                                    ));
+                                @endphp
+
                                 <td>
-                                    @if($participant->payment_status == 'paid')
-                                    <span class="badge bg-success">Paid</span>
-                                    @elseif($participant->payment_status == 'pending')
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                    @else
-                                    <span class="badge bg-danger">Failed</span>
-                                    @endif
+                                    @foreach($allStatuses as $status)
+                                        <span class="badge bg-{{ $statusColors[$status] ?? 'secondary' }} me-1">
+                                            {{ ucfirst($status) }}
+                                        </span>
+                                    @endforeach
                                 </td>
 
                                 <!-- DATE -->
