@@ -72,7 +72,7 @@
                     <div class="col-lg-3">
                         <div class="card p-3">
                             <h6>Pending</h6>
-                            <h4>{{ \App\Models\Participant::where('payment_status','pending')->count() }}</h4>
+                            <h4>{{ \App\Models\Payment::where('status','pending')->count() }}</h4>
                         </div>
                     </div>
 
