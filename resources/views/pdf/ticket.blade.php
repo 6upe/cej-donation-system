@@ -227,7 +227,7 @@
             text-align: right;
             width: 48px;
         }
-        .stub-lbl { font-size: 7px; color: #555; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 1px; }
+        .stub-lbl { font-size: 7px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 1px; }
         .stub-val { font-size: 10px; color: #fff; font-weight: bold; }
         .stub-code { font-family: 'Courier New', monospace; font-size: 12px; color: #fff; font-weight: bold; letter-spacing: 1.5px; }
         .stub-qr { border: 1px solid #333; padding: 2px; background: #fff; display: inline-block; }
