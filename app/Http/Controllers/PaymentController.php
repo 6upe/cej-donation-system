@@ -658,6 +658,7 @@ public function resendTicket(Request $request)
     $participant = Participant::where('id', $request->participant_id)
         ->where('ticket_code', $request->ticket_code)
         ->first();
+        
     $payment = Payment::where('participant_id', $request->participant_id)->latest()->first();
 
     if (!$participant) {
