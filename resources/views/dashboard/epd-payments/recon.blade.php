@@ -15,9 +15,9 @@
                 Run Reconciliation
             </button>
 
-            <button onclick="verifyDPO()" class="btn btn-warning">
+            <!-- <button onclick="verifyDPO()" class="btn btn-warning">
                 Verify With DPO
-            </button>
+            </button> -->
         </div>
     </div>
 </div>

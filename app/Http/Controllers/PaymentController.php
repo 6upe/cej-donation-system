@@ -388,6 +388,7 @@ class PaymentController extends Controller
 
                         // $participant->payment_status = 'paid';
                         $participant->product_status = ['paid','registered'];
+                        $participant->payment_status = 'paid';
                         $participant->ticket_code = 'EPD2026-' . strtoupper(Str::random(10));
                         $participant->save();
 
