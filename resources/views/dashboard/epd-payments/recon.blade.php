@@ -52,17 +52,19 @@ function verifyDPO() {
 
     showLoader("Verifying with DPO...");
 
-    fetch('/dashboard/reconciliation/verify-dpo', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            hideLoader();
-            renderDPOResults(data.data);
-        });
+    // fetch('/dashboard/reconciliation/verify-dpo', {
+    //         method: 'POST',
+    //         headers: {
+    //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    //         }
+    //     })
+    //     .then(res => res.json())
+    //     .then(data => {
+    //         hideLoader();
+    //         renderDPOResults(data.data);
+    //     });
+
+    hideLoader();
 }
 
 function renderResults(data) {
