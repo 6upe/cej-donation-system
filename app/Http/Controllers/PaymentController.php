@@ -370,6 +370,8 @@ class PaymentController extends Controller
                
                 $participant = Participant::where('transaction_token', $request->token)->first();
 
+                $payment = Payment::where('transaction_token', $request->token)->first();
+
                 
 
                  if (!$participant) {
@@ -410,6 +412,7 @@ class PaymentController extends Controller
                         // ✅ Generate PDF referencing the SVG file
                         $pdf = Pdf::loadView('pdf.ticket', [
                             'participant' => $participant,
+                            'payment' => $payment,
                             'qrPath' => $tempPath
                         ]);
 
