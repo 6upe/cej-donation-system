@@ -391,6 +391,13 @@ class PaymentController extends Controller
                         $participant->ticket_code = 'EPD2026-' . strtoupper(Str::random(10));
                         $participant->save();
 
+                        $payment->update([
+                            'status' => 'paid',
+                            'response_message' => 'Payment successful',
+                            'paid_at' => now(),
+                            'raw_response' => json_decode(json_encode($body), true),
+                        ]);
+
                         Log::info('TEST: Payment verified for participant', [
                             'email' => $participant->email,
                             'participant_id' => $participant->id,
