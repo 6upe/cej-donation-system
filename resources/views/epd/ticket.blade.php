@@ -156,7 +156,7 @@
 
                     @foreach($statuses as $status)
                         <span class="status-badge {{ $status }}">
-                            {{ ucfirst($status) }}
+                            {{ $status }}
                         </span>
                     @endforeach
                 </div>
