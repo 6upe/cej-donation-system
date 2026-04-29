@@ -289,6 +289,14 @@ public function clearStatusAjax(Request $request)
 {
     $query = \App\Models\Participant::query();
 
+    $participants = Participant::latest()->paginate(10);
+        
+    $totalPaidAmount = Payment::where('status', 'paid')
+    ->sum('amount');
+
+    $totalPaidCount = Payment::where('status', 'paid')
+        ->count();
+
     // 🔍 SEARCH (partial matching)
     if ($request->filled('search')) {
         $search = $request->search;
@@ -312,7 +320,7 @@ public function clearStatusAjax(Request $request)
 
     $participants = $query->latest()->paginate(10)->withQueryString();
 
-    return view('dashboard.sections.epd_participants', compact('participants'));
+    return view('dashboard.sections.epd_participants', compact('participants', 'totalPaidAmount', 'totalPaidCount'));
 }
 
 public function reconciliation()
