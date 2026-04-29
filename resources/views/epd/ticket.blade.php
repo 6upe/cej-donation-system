@@ -155,7 +155,6 @@
                     @endphp
 
                     <div class="row mb-2">
-                        <div class="col-4 fw-bold">Product Status:</div>
                         <div class="col-8">
                             @foreach($statuses as $status)
                                 <span class="status-badge {{ $status }}">
