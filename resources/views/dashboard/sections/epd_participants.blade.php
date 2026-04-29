@@ -273,7 +273,7 @@ document.querySelector('input[name="search"]').addEventListener('keyup', functio
     timer = setTimeout(() => {
         showLoader("Searching...");
         this.form.submit();
-        hideLoader();
+        // hideLoader();
     }, 3000); // delay to avoid too many requests
 
     
@@ -283,7 +283,7 @@ document.querySelector('input[name="search"]').addEventListener('keyup', functio
 document.querySelector('.searchBtn').addEventListener('click', function() {
     showLoader("Applying filters...");
     this.form.submit();
-    hideLoader();
+    // hideLoader();
 });
 
 function resendTicket(participantId, ticketCode) {
