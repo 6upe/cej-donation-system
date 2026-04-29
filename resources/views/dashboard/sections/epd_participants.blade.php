@@ -266,15 +266,17 @@ let timer;
 
 document.querySelector('input[name="search"]').addEventListener('keyup', function() {
 
-showLoader("Searching...");
+
 
     clearTimeout(timer);
 
     timer = setTimeout(() => {
+        showLoader("Searching...");
         this.form.submit();
+        hideLoader();
     }, 3000); // delay to avoid too many requests
 
-    hideLoader();
+    
 
 });
 
