@@ -269,7 +269,7 @@ document.querySelector('input[name="search"]').addEventListener('keyup', functio
 
     timer = setTimeout(() => {
         this.form.submit();
-    }, 1500); // delay to avoid too many requests
+    }, 3000); // delay to avoid too many requests
 });
 
 function resendTicket(participantId, ticketCode) {
