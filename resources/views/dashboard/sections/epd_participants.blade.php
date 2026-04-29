@@ -117,7 +117,7 @@
 
                             <!-- SUBMIT -->
                             <div class="col-md-2 mb-1 mt-1">
-                                <button class="btn btn-primary w-100">Search</button>
+                                <button class="btn btn-primary w-100 searchBtn">Search</button>
                             </div>
 
                             <!-- <button onclick="verifyAllPayments()" class="btn btn-warning">
@@ -276,6 +276,12 @@ showLoader("Searching...");
 
     hideLoader();
 
+});
+
+document.querySelector('.searchBtn').addEventListener('click', function() {
+    showLoader("Applying filters...");
+    this.form.submit();
+    hideLoader();
 });
 
 function resendTicket(participantId, ticketCode) {
