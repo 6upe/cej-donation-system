@@ -154,15 +154,11 @@
                         if (is_string($statuses)) $statuses = [$statuses];
                     @endphp
 
-                    <div class="row mb-2">
-                        <div class="col-8">
-                            @foreach($statuses as $status)
-                                <span class="status-badge {{ $status }}">
-                                    {{ ucfirst($status) }}
-                                </span>
-                            @endforeach
-                        </div>
-                    </div>
+                    @foreach($statuses as $status)
+                        <span class="status-badge {{ $status }}">
+                            {{ ucfirst($status) }}
+                        </span>
+                    @endforeach
                 </div>
             </div>
         </div>
