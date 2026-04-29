@@ -111,7 +111,7 @@
                                 <select name="package" class="form-select">
                                     <option value="">All Packages</option>
                                     <option value="standard">Standard</option>
-                                    <option value="vip">VIP</option>
+                                    <option value="corporate">Corporate</option>
                                 </select>
                             </div>
 
