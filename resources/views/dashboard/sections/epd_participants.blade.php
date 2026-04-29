@@ -265,11 +265,17 @@
 let timer;
 
 document.querySelector('input[name="search"]').addEventListener('keyup', function() {
+
+showLoader("Searching...");
+
     clearTimeout(timer);
 
     timer = setTimeout(() => {
         this.form.submit();
     }, 3000); // delay to avoid too many requests
+
+    hideLoader();
+
 });
 
 function resendTicket(participantId, ticketCode) {
