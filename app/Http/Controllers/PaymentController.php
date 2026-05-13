@@ -38,7 +38,7 @@ class PaymentController extends Controller
             'email' => 'required|email',
             'phone' => 'required|string',
             'product' => 'required|string',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|in:2500,4000',
             'currency' => 'required|string',
             'ticketPackage' => 'required|string',
             'delegateCategory' => 'required|string',
